@@ -139,13 +139,13 @@ export default function UppostPanel() {
 
   if (!auth.isAuthenticated) {
     return (
-      <div className="min-h-screen bg-background text-foreground flex flex-col">
+      <div className="min-h-screen bg-background text-foreground flex flex-col animate-fadeIn">
         <Header />
         <div className="flex-1 flex items-center justify-center px-4 py-12">
-          <div className="w-full max-w-md">
-            <div className="bg-card border border-border rounded-xl p-10">
-              <div className="mb-2 w-10 h-10 bg-accent rounded-lg flex items-center justify-center">
-                <span className="font-black text-accent-foreground">⚙️</span>
+          <div className="w-full max-w-md animate-fadeIn" style={{ animationDelay: "0.1s" }}>
+            <div className="bg-card border border-border rounded-xl p-10 shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <div className="mb-2 w-10 h-10 bg-accent rounded-lg flex items-center justify-center shadow-md">
+                <Upload className="w-5 h-5 text-accent-foreground" />
               </div>
               <h1 className="text-4xl font-black mb-2 text-foreground">
                 Uppost Panel
@@ -163,7 +163,7 @@ export default function UppostPanel() {
                     type="text"
                     value={loginUsername}
                     onChange={(e) => setLoginUsername(e.target.value)}
-                    className="w-full px-4 py-3 bg-background border border-border hover:border-accent/50 rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-colors"
+                    className="w-full px-4 py-3 bg-background border border-border hover:border-accent/50 rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all"
                     placeholder="Enter username"
                     autoComplete="username"
                   />
@@ -177,21 +177,21 @@ export default function UppostPanel() {
                     type="password"
                     value={loginPassword}
                     onChange={(e) => setLoginPassword(e.target.value)}
-                    className="w-full px-4 py-3 bg-background border border-border hover:border-accent/50 rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-colors"
+                    className="w-full px-4 py-3 bg-background border border-border hover:border-accent/50 rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all"
                     placeholder="Enter password"
                     autoComplete="current-password"
                   />
                 </div>
 
                 {loginError && (
-                  <div className="p-4 bg-destructive/10 border border-destructive rounded-lg text-destructive text-sm font-medium">
+                  <div className="p-4 bg-destructive/10 border border-destructive rounded-lg text-destructive text-sm font-medium animate-fadeIn">
                     ⚠️ {loginError}
                   </div>
                 )}
 
                 <button
                   type="submit"
-                  className="w-full px-4 py-3 bg-accent text-accent-foreground font-bold rounded-lg hover:bg-accent/90 transition-all active:scale-95"
+                  className="w-full px-4 py-3 bg-accent text-accent-foreground font-bold rounded-lg hover:bg-accent/90 active:scale-95 transition-all shadow-md hover:shadow-lg"
                 >
                   Login to Dashboard
                 </button>
