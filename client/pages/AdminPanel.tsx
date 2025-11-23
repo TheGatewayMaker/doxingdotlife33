@@ -415,6 +415,7 @@ export default function AdminPanel() {
                     onDelete={handleDeletePost}
                     onUpdate={handlePostUpdated}
                     animationDelay={idx * 0.05}
+                    authToken={authToken!}
                   />
                 ))}
               </div>
