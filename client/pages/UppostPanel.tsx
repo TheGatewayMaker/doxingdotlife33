@@ -173,7 +173,7 @@ export default function UppostPanel() {
     }
   };
 
-  if (!auth.isAuthenticated) {
+  if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-background text-foreground flex flex-col animate-fadeIn">
         <Header />
