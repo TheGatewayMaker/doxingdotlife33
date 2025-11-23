@@ -422,7 +422,7 @@ export default function Index() {
   const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col animate-fadeIn">
+    <div className="min-h-screen bg-slate-900 text-white flex flex-col animate-fadeIn">
       <Header />
 
       <main className="flex-1 w-full">
