@@ -11,6 +11,12 @@ import {
   handleDeleteMediaFile,
   handleUpdatePost,
 } from "./routes/admin";
+import {
+  handleLogin,
+  handleLogout,
+  handleCheckAuth,
+  authMiddleware,
+} from "./routes/auth";
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -42,6 +48,11 @@ export function createServer() {
 
   app.get("/api/demo", handleDemo);
 
+  // Authentication routes
+  app.post("/api/auth/login", handleLogin);
+  app.post("/api/auth/logout", handleLogout);
+  app.get("/api/auth/check", handleCheckAuth);
+
   // Debug endpoint to check environment variables
   app.get("/api/debug/env", (_req, res) => {
     const r2Keys = Object.keys(process.env).filter((k) => k.startsWith("R2_"));
@@ -59,6 +70,7 @@ export function createServer() {
   // Forum API routes
   app.post(
     "/api/upload",
+    authMiddleware,
     upload.fields([
       { name: "media", maxCount: 1 },
       { name: "thumbnail", maxCount: 1 },
@@ -68,10 +80,14 @@ export function createServer() {
   app.get("/api/posts", handleGetPosts);
   app.get("/api/servers", handleGetServers);
 
-  // Admin routes
-  app.delete("/api/posts/:postId", handleDeletePost);
-  app.delete("/api/posts/:postId/media/:fileName", handleDeleteMediaFile);
-  app.put("/api/posts/:postId", handleUpdatePost);
+  // Admin routes (protected by auth middleware)
+  app.delete("/api/posts/:postId", authMiddleware, handleDeletePost);
+  app.delete(
+    "/api/posts/:postId/media/:fileName",
+    authMiddleware,
+    handleDeleteMediaFile,
+  );
+  app.put("/api/posts/:postId", authMiddleware, handleUpdatePost);
 
   // Media proxy endpoint for additional CORS support
   app.get("/api/media/:postId/:fileName", async (req, res) => {

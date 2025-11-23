@@ -7,12 +7,14 @@ interface MediaManagerModalProps {
   post: Post;
   onClose: () => void;
   onUpdate: (post: Post) => void;
+  authToken: string;
 }
 
 export default function MediaManagerModal({
   post,
   onClose,
   onUpdate,
+  authToken,
 }: MediaManagerModalProps) {
   const [deletingFileName, setDeletingFileName] = useState<string | null>(null);
   const [isDeletingFile, setIsDeletingFile] = useState(false);
@@ -65,6 +67,9 @@ export default function MediaManagerModal({
         `/api/posts/${post.id}/media/${encodeURIComponent(deletingFileName)}`,
         {
           method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
         },
       );
 

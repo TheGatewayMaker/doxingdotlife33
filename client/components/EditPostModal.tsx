@@ -7,6 +7,7 @@ interface EditPostModalProps {
   post: Post;
   onClose: () => void;
   onUpdate: (post: Post) => void;
+  authToken: string;
 }
 
 const COUNTRIES = [
@@ -99,6 +100,7 @@ export default function EditPostModal({
   post,
   onClose,
   onUpdate,
+  authToken,
 }: EditPostModalProps) {
   const [title, setTitle] = useState(post.title);
   const [description, setDescription] = useState(post.description);
@@ -124,6 +126,7 @@ export default function EditPostModal({
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
         },
         body: JSON.stringify({
           title: title.trim(),

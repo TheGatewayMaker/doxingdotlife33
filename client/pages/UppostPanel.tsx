@@ -1,25 +1,18 @@
 import { useState } from "react";
 import { LogOut, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { UploadIcon, ImageIcon } from "@/components/Icons";
-
-interface AuthState {
-  isAuthenticated: boolean;
-  username: string;
-}
-
-const VALID_USERNAME = "uploader81";
-const VALID_PASSWORD = "uploader123";
+import { useAuthContext } from "@/contexts/AuthContext";
 
 export default function UppostPanel() {
-  const [auth, setAuth] = useState<AuthState>({
-    isAuthenticated: false,
-    username: "",
-  });
+  const navigate = useNavigate();
+  const { isAuthenticated, username, token, login } = useAuthContext();
   const [loginUsername, setLoginUsername] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [loginError, setLoginError] = useState("");
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -36,27 +29,44 @@ export default function UppostPanel() {
   const [uploadMessage, setUploadMessage] = useState("");
   const [uploadError, setUploadError] = useState("");
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError("");
+    setIsLoggingIn(true);
 
-    if (loginUsername === VALID_USERNAME && loginPassword === VALID_PASSWORD) {
-      setAuth({
-        isAuthenticated: true,
-        username: loginUsername,
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: loginUsername,
+          password: loginPassword,
+        }),
       });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setLoginError(data.error || "Login failed");
+        setIsLoggingIn(false);
+        return;
+      }
+
+      login(data.token, loginUsername);
       setLoginUsername("");
       setLoginPassword("");
-    } else {
-      setLoginError("Invalid username or password");
+    } catch (error) {
+      setLoginError("Network error. Please try again.");
+      console.error("Login error:", error);
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
-  const handleLogout = () => {
-    setAuth({
-      isAuthenticated: false,
-      username: "",
-    });
+  const handleLogout = async () => {
+    await logout();
     resetForm();
   };
 
@@ -143,6 +153,9 @@ export default function UppostPanel() {
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (!response.ok) {
@@ -160,24 +173,24 @@ export default function UppostPanel() {
     }
   };
 
-  if (!auth.isAuthenticated) {
+  if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-background text-foreground flex flex-col animate-fadeIn">
         <Header />
-        <div className="flex-1 flex items-center justify-center px-4 py-12">
+        <div className="flex-1 flex items-center justify-center px-4 py-12 bg-gradient-to-br from-background via-muted/20 to-background">
           <div
             className="w-full max-w-md animate-fadeIn"
             style={{ animationDelay: "0.1s" }}
           >
-            <div className="bg-card border border-border rounded-xl p-10 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <div className="mb-2 w-10 h-10 bg-accent rounded-lg flex items-center justify-center shadow-md">
-                <UploadIcon className="w-5 h-5 text-accent-foreground" />
+            <div className="bg-card border border-border rounded-xl p-10 shadow-xl hover:shadow-2xl transition-shadow duration-300">
+              <div className="mb-4 w-12 h-12 bg-gradient-to-br from-accent to-accent/80 rounded-lg flex items-center justify-center shadow-lg">
+                <UploadIcon className="w-6 h-6 text-accent-foreground" />
               </div>
               <h1 className="text-4xl font-black mb-2 text-foreground">
-                Uppost Panel
+                Upload Portal
               </h1>
-              <p className="text-muted-foreground mb-8">
-                Admin access required to manage posts
+              <p className="text-muted-foreground mb-8 text-sm">
+                Secure admin authentication required to create and manage posts
               </p>
 
               <form onSubmit={handleLogin} className="space-y-5">
@@ -217,9 +230,10 @@ export default function UppostPanel() {
 
                 <button
                   type="submit"
-                  className="w-full px-4 py-3 bg-accent text-accent-foreground font-bold rounded-lg hover:bg-accent/90 active:scale-95 transition-all shadow-md hover:shadow-lg"
+                  disabled={isLoggingIn}
+                  className="w-full px-4 py-3 bg-accent text-accent-foreground font-bold rounded-lg hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 transition-all shadow-md hover:shadow-lg"
                 >
-                  Login to Dashboard
+                  {isLoggingIn ? "Logging in..." : "Login to Dashboard"}
                 </button>
               </form>
             </div>
@@ -234,29 +248,43 @@ export default function UppostPanel() {
     <div className="min-h-screen bg-background text-foreground flex flex-col animate-fadeIn">
       <Header />
       <main className="flex-1 w-full">
-        <div className="max-w-4xl mx-auto px-4 py-12">
-          <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-10">
-            <div className="animate-fadeIn" style={{ animationDelay: "0.1s" }}>
-              <h1 className="text-5xl md:text-6xl font-black mb-2">
-                📤 Uppost Panel
-              </h1>
-              <p className="text-muted-foreground">
-                Logged in as:{" "}
-                <span className="text-accent font-medium">{auth.username}</span>
-              </p>
+        {/* Hero Section */}
+        <div className="bg-gradient-to-br from-background via-card/50 to-background pt-8 pb-8 md:pt-16 md:pb-12 border-b border-border/50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-0">
+              <div
+                className="animate-fadeIn"
+                style={{ animationDelay: "0.1s" }}
+              >
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-3 text-foreground tracking-tighter leading-tight flex items-center gap-2">
+                  <UploadIcon className="w-8 h-8 text-accent" />
+                  Upload Panel
+                </h1>
+                <p className="text-base sm:text-lg md:text-xl font-semibold text-muted-foreground mb-4">
+                  Logged in as:{" "}
+                  <span className="text-accent font-bold">{username}</span>
+                </p>
+                <div className="flex flex-wrap gap-3 items-center">
+                  <span className="inline-block px-3 py-1.5 bg-accent/20 text-accent font-semibold text-sm rounded-full">
+                    ✓ Authenticated
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-6 py-3 bg-destructive/90 hover:bg-destructive text-destructive-foreground font-bold rounded-lg transition-all shadow-md hover:shadow-lg active:scale-95 whitespace-nowrap"
+              >
+                <LogOut className="w-5 h-5" />
+                Logout
+              </button>
             </div>
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2 bg-destructive text-destructive-foreground font-medium rounded-lg hover:bg-destructive/90 transition-all shadow-md hover:shadow-lg active:scale-95"
-            >
-              <LogOut className="w-5 h-5" />
-              Logout
-            </button>
           </div>
+        </div>
 
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
           <form
             onSubmit={handleUpload}
-            className="bg-card border border-border rounded-xl p-8 md:p-10 space-y-8 shadow-lg animate-fadeIn"
+            className="bg-card border border-border rounded-xl p-6 sm:p-8 md:p-10 space-y-8 shadow-xl hover:shadow-2xl transition-shadow duration-300 animate-fadeIn"
             style={{ animationDelay: "0.2s" }}
           >
             {/* Title */}

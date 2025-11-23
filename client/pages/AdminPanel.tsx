@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Post, PostsResponse } from "@shared/api";
+import { useAuthContext } from "@/contexts/AuthContext";
 import {
   SearchIcon,
   FilterIcon,
@@ -103,6 +105,8 @@ const COUNTRIES = [
 ];
 
 export default function AdminPanel() {
+  const navigate = useNavigate();
+  const { isAuthenticated, token, isLoading: isAuthLoading } = useAuthContext();
   const [posts, setPosts] = useState<Post[]>([]);
   const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
   const [isLoadingPosts, setIsLoadingPosts] = useState(true);
@@ -117,6 +121,12 @@ export default function AdminPanel() {
 
   const [deletingPostId, setDeletingPostId] = useState<string | null>(null);
   const [isDeletingPost, setIsDeletingPost] = useState(false);
+
+  useEffect(() => {
+    if (!isAuthLoading && !isAuthenticated) {
+      navigate("/uppostpanel");
+    }
+  }, [isAuthenticated, isAuthLoading, navigate]);
 
   const filteredCountries = COUNTRIES.filter((c) =>
     c.toLowerCase().includes(countrySearch.toLowerCase()),
@@ -174,12 +184,15 @@ export default function AdminPanel() {
   };
 
   const confirmDeletePost = async () => {
-    if (!deletingPostId) return;
+    if (!deletingPostId || !token) return;
 
     try {
       setIsDeletingPost(true);
       const response = await fetch(`/api/posts/${deletingPostId}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (!response.ok) {
@@ -207,6 +220,47 @@ export default function AdminPanel() {
     );
     toast.success("Post updated successfully");
   };
+
+  if (isAuthLoading) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex flex-col animate-fadeIn">
+        <Header />
+        <main className="flex-1 w-full flex items-center justify-center">
+          <div className="text-center">
+            <div className="inline-block animate-spin mb-4">
+              <div className="w-10 h-10 border-3 border-muted border-t-accent rounded-full"></div>
+            </div>
+            <p className="text-muted-foreground">Checking authentication...</p>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex flex-col animate-fadeIn">
+        <Header />
+        <main className="flex-1 w-full flex items-center justify-center px-4">
+          <div className="text-center max-w-md">
+            <div className="mb-6">
+              <div className="text-6xl mb-4">🔒</div>
+              <h1 className="text-3xl font-bold mb-2">Access Denied</h1>
+              <p className="text-muted-foreground mb-6">
+                You need to be logged in to access the admin panel.
+              </p>
+              <a
+                href="/uppostpanel"
+                className="inline-block px-6 py-3 bg-accent text-accent-foreground font-bold rounded-lg hover:bg-accent/90 transition-all"
+              >
+                Go to Login
+              </a>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col animate-fadeIn">
@@ -357,6 +411,7 @@ export default function AdminPanel() {
                     onDelete={handleDeletePost}
                     onUpdate={handlePostUpdated}
                     animationDelay={idx * 0.05}
+                    authToken={token!}
                   />
                 ))}
               </div>
