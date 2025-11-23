@@ -294,25 +294,37 @@ export default function UppostPanel() {
     <div className="min-h-screen bg-background text-foreground flex flex-col animate-fadeIn">
       <Header />
       <main className="flex-1 w-full">
-        <div className="max-w-4xl mx-auto px-4 py-12">
-          <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-10">
-            <div className="animate-fadeIn" style={{ animationDelay: "0.1s" }}>
-              <h1 className="text-5xl md:text-6xl font-black mb-2">
-                📤 Uppost Panel
-              </h1>
-              <p className="text-muted-foreground">
-                Logged in as:{" "}
-                <span className="text-accent font-medium">{auth.username}</span>
-              </p>
+        {/* Hero Section */}
+        <div className="bg-gradient-to-br from-background via-card/50 to-background pt-8 pb-8 md:pt-16 md:pb-12 border-b border-border/50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-0">
+              <div className="animate-fadeIn" style={{ animationDelay: "0.1s" }}>
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-3 text-foreground tracking-tighter leading-tight flex items-center gap-2">
+                  <UploadIcon className="w-8 h-8 text-accent" />
+                  Upload Panel
+                </h1>
+                <p className="text-base sm:text-lg md:text-xl font-semibold text-muted-foreground mb-4">
+                  Logged in as:{" "}
+                  <span className="text-accent font-bold">{auth.username}</span>
+                </p>
+                <div className="flex flex-wrap gap-3 items-center">
+                  <span className="inline-block px-3 py-1.5 bg-accent/20 text-accent font-semibold text-sm rounded-full">
+                    ✓ Authenticated
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-6 py-3 bg-destructive/90 hover:bg-destructive text-destructive-foreground font-bold rounded-lg transition-all shadow-md hover:shadow-lg active:scale-95 whitespace-nowrap"
+              >
+                <LogOut className="w-5 h-5" />
+                Logout
+              </button>
             </div>
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2 bg-destructive text-destructive-foreground font-medium rounded-lg hover:bg-destructive/90 transition-all shadow-md hover:shadow-lg active:scale-95"
-            >
-              <LogOut className="w-5 h-5" />
-              Logout
-            </button>
           </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
 
           <form
             onSubmit={handleUpload}
