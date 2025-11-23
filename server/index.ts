@@ -6,6 +6,7 @@ import { handleDemo } from "./routes/demo";
 import { handleUpload } from "./routes/upload";
 import { handleGetPosts } from "./routes/posts";
 import { handleGetServers } from "./routes/servers";
+import { handleMediaProxy } from "./routes/media";
 
 const upload = multer({
   storage: multer.memoryStorage(),
