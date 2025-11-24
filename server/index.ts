@@ -1,13 +1,3 @@
-// Only load dotenv in development (when .env file exists)
-// In production/Netlify, environment variables are injected directly by the platform
-if (process.env.NODE_ENV !== "production") {
-  try {
-    await import("dotenv/config");
-  } catch (e) {
-    // dotenv not available or error loading
-  }
-}
-
 import express from "express";
 import cors from "cors";
 import multer from "multer";
