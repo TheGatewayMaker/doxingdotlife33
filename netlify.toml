@@ -3,13 +3,9 @@
   functions = "netlify/functions"
   publish = "dist/spa"
 
-[functions]
-  node_bundler = "esbuild"
-  memory = 3008
-  timeout = 60
-
 [[functions]]
   name = "api"
+  node_bundler = "esbuild"
   memory = 3008
   timeout = 60
 
