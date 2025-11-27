@@ -72,7 +72,7 @@ export const handleGetPosts: RequestHandler = async (req, res) => {
         const mediaFileObjects = mediaFiles
           .map((fileName) => ({
             name: fileName,
-            url: getMediaUrl(`posts/${postId}/${fileName}`),
+            url: `/api/media/${postId}/${fileName}`,
             type: getMimeType(fileName),
           }))
           .filter((f) => f.name !== "metadata.json");
