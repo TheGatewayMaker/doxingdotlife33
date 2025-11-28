@@ -75,6 +75,12 @@ const AUTHORIZED_EMAILS = import.meta.env.VITE_AUTHORIZED_EMAILS
  * Returns user data if successful, throws error if email is not authorized
  */
 export const signInWithGoogle = async (): Promise<User> => {
+  if (!auth || !googleProvider) {
+    throw new Error(
+      "Firebase is not initialized. Please configure Firebase environment variables.",
+    );
+  }
+
   try {
     const result = await signInWithPopup(auth, googleProvider);
     const user = result.user;
