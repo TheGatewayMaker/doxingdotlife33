@@ -2,6 +2,7 @@ import { Copy, Check } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { GlobeIcon, MapPinIcon, ServerIcon } from "@/components/Icons";
+import { parseMarkdownBold } from "@/lib/markdown-parser";
 
 interface PostDescriptionSectionProps {
   description: string;
@@ -85,7 +86,7 @@ export default function PostDescriptionSection({
         </div>
 
         <div className="text-base leading-relaxed text-foreground whitespace-pre-wrap">
-          {description}
+          {parseMarkdownBold(description)}
         </div>
       </div>
     </div>
