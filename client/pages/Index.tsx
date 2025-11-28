@@ -285,7 +285,9 @@ export default function Index() {
 
     filtered.sort((a, b) => {
       if (a.isTrend && b.isTrend) {
-        return (a.trendRank ?? Number.MAX_VALUE) - (b.trendRank ?? Number.MAX_VALUE);
+        return (
+          (a.trendRank ?? Number.MAX_VALUE) - (b.trendRank ?? Number.MAX_VALUE)
+        );
       }
       if (a.isTrend) return -1;
       if (b.isTrend) return 1;

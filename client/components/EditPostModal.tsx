@@ -144,7 +144,11 @@ export default function EditPostModal({
           server: server.trim(),
           nsfw,
           isTrend,
-          trendRank: isTrend ? (trendRank ? parseInt(trendRank, 10) : null) : null,
+          trendRank: isTrend
+            ? trendRank
+              ? parseInt(trendRank, 10)
+              : null
+            : null,
         }),
       });
 
@@ -306,7 +310,9 @@ export default function EditPostModal({
                   >
                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                   </svg>
-                  <p className="text-sm font-bold text-amber-400">Mark as Trending</p>
+                  <p className="text-sm font-bold text-amber-400">
+                    Mark as Trending
+                  </p>
                 </div>
                 <p className="text-xs text-amber-300">
                   Posts marked as trending will appear first with a golden
