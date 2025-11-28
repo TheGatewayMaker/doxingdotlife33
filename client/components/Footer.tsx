@@ -21,7 +21,7 @@ export default function Footer() {
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 shadow-lg">
                 <img
-                  src="https://i.ibb.co/rG8yDddq/doxingdotlifelogogeniune888175141.png"
+                  src="https://i.ibb.co/PzNWvp7N/doxinglifelogo.png"
                   alt="Doxing Dot Life Logo"
                   className="w-full h-full object-cover"
                 />
