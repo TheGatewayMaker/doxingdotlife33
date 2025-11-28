@@ -1,7 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Menu, X, LogOut } from "lucide-react";
-import { HomeIcon } from "@/components/Icons";
+import {
+  HomeIcon,
+  UploadIcon,
+  SettingsIcon,
+  SearchAltIcon,
+} from "@/components/Icons";
 import { useAuthContext } from "@/contexts/AuthContext";
 
 export default function Header() {
@@ -50,7 +55,8 @@ export default function Header() {
             to="/dox-anyone"
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all"
           >
-            🔍 Dox Anyone
+            <SearchAltIcon className="w-4 h-4" />
+            Dox Anyone
           </Link>
           {isAuthenticated && (
             <>
@@ -58,13 +64,15 @@ export default function Header() {
                 to="/uppostpanel"
                 className="flex items-center gap-2 text-sm font-semibold text-gray-300 hover:text-white transition-colors"
               >
-                📤 Upload
+                <UploadIcon className="w-4 h-4" />
+                Upload
               </Link>
               <Link
                 to="/admin-panel"
                 className="flex items-center gap-2 px-4 py-2 bg-yellow-600 text-white font-semibold rounded-lg hover:bg-yellow-700 transition-all"
               >
-                ⚙️ Admin
+                <SettingsIcon className="w-4 h-4" />
+                Admin
               </Link>
               <button
                 onClick={handleLogout}
@@ -115,7 +123,8 @@ export default function Header() {
                   onClick={closeSidebar}
                   className="flex items-center gap-3 w-full px-4 py-3 text-white font-semibold hover:bg-blue-600 rounded-lg transition-colors bg-blue-600/20"
                 >
-                  🔍 Dox Anyone
+                  <SearchAltIcon className="w-4 h-4" />
+                  Dox Anyone
                 </Link>
                 {isAuthenticated && (
                   <>
@@ -124,14 +133,16 @@ export default function Header() {
                       onClick={closeSidebar}
                       className="flex items-center gap-3 w-full px-4 py-3 text-gray-300 font-semibold hover:bg-slate-700 hover:text-white rounded-lg transition-colors"
                     >
-                      📤 Upload
+                      <UploadIcon className="w-4 h-4" />
+                      Upload
                     </Link>
                     <Link
                       to="/admin-panel"
                       onClick={closeSidebar}
                       className="flex items-center gap-3 w-full px-4 py-3 text-white font-semibold hover:bg-yellow-600 rounded-lg transition-colors bg-yellow-600/20"
                     >
-                      ⚙️ Admin Panel
+                      <SettingsIcon className="w-4 h-4" />
+                      Admin Panel
                     </Link>
                   </>
                 )}

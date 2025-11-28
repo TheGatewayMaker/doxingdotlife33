@@ -6,6 +6,7 @@ import {
   ServerIcon,
   TrashIcon,
   EditIcon,
+  ImageIcon,
 } from "./Icons";
 import EditPostModal from "./EditPostModal";
 import MediaManagerModal from "./MediaManagerModal";
@@ -51,7 +52,7 @@ export default function AdminPostCard({
                   errorDiv.className =
                     "text-center text-muted-foreground flex flex-col items-center justify-center gap-2";
                   errorDiv.innerHTML =
-                    '<div class="text-3xl">🖼️</div><div class="text-xs">Image unavailable</div>';
+                    '<svg class="w-8 h-8 mx-auto text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"></polyline></svg><div class="text-xs">Image unavailable</div>';
                   parent.appendChild(errorDiv);
                 }
               }}
@@ -69,7 +70,14 @@ export default function AdminPostCard({
             </h3>
             {post.nsfw && (
               <span className="inline-flex items-center gap-1 bg-red-600 text-white px-2 py-1 rounded text-xs font-bold flex-shrink-0">
-                ⚠️ NSFW
+                <svg
+                  className="w-3 h-3"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                </svg>
+                NSFW
               </span>
             )}
           </div>
@@ -120,7 +128,8 @@ export default function AdminPostCard({
               onClick={() => setShowMediaModal(true)}
               className="flex-1 px-3 py-2 bg-blue-600 text-white font-medium text-xs rounded-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-1.5 active:scale-95"
             >
-              📁 Media ({post.mediaFiles.length})
+              <ImageIcon className="w-4 h-4" />
+              Media ({post.mediaFiles.length})
             </button>
             <button
               onClick={() => setShowEditModal(true)}

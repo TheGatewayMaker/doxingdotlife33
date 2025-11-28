@@ -480,7 +480,7 @@ export default function Index() {
               {showSearchSuggestions &&
                 searchQuery &&
                 searchSuggestions.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-slate-800 border border-slate-700 rounded-lg z-[100] max-h-64 overflow-y-auto shadow-xl shadow-blue-500/20">
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-slate-800 border border-slate-700 rounded-lg z-[200] max-h-64 overflow-y-auto shadow-xl shadow-blue-500/20">
                     {searchSuggestions.map((post) => (
                       <button
                         key={post.id}

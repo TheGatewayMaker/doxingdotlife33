@@ -1,3 +1,17 @@
+import {
+  HomeIcon,
+  LinkIcon,
+  SearchAltIcon,
+  MessageIcon,
+  FileTextIcon,
+  ScaleIcon,
+  AlertIcon,
+  ShoppingCartIcon,
+  CreditCardIcon,
+  PhoneIcon,
+  MailIcon,
+} from "@/components/Icons";
+
 export default function Footer() {
   return (
     <footer className="w-full bg-slate-900 border-t border-slate-700 mt-12 shadow-md animate-fadeIn">
@@ -20,66 +34,105 @@ export default function Footer() {
           </div>
           <div className="animate-fadeIn" style={{ animationDelay: "0.2s" }}>
             <h4 className="font-semibold text-blue-400 mb-4 flex items-center gap-2">
-              🔗 Quick Links
+              <LinkIcon className="w-4 h-4" />
+              Quick Links
             </h4>
             <ul className="space-y-2 text-sm text-gray-400">
               <li>
-                <a href="#" className="hover:text-blue-400 transition-colors">
-                  🏠 Home
+                <a
+                  href="#"
+                  className="hover:text-blue-400 transition-colors flex items-center gap-2"
+                >
+                  <HomeIcon className="w-4 h-4" />
+                  Home
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-blue-400 transition-colors">
-                  🔍 Browse Database
+                <a
+                  href="#"
+                  className="hover:text-blue-400 transition-colors flex items-center gap-2"
+                >
+                  <SearchAltIcon className="w-4 h-4" />
+                  Browse Database
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-blue-400 transition-colors">
-                  💬 Discord Community
+                <a
+                  href="#"
+                  className="hover:text-blue-400 transition-colors flex items-center gap-2"
+                >
+                  <MessageIcon className="w-4 h-4" />
+                  Discord Community
                 </a>
               </li>
             </ul>
           </div>
           <div className="animate-fadeIn" style={{ animationDelay: "0.3s" }}>
             <h4 className="font-semibold text-blue-400 mb-4 flex items-center gap-2">
-              📋 Legal
+              <FileTextIcon className="w-4 h-4" />
+              Legal
             </h4>
             <ul className="space-y-2 text-sm text-gray-400">
               <li>
-                <a href="#" className="hover:text-blue-400 transition-colors">
-                  📜 Privacy Policy
+                <a
+                  href="#"
+                  className="hover:text-blue-400 transition-colors flex items-center gap-2"
+                >
+                  <FileTextIcon className="w-4 h-4" />
+                  Privacy Policy
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-blue-400 transition-colors">
-                  ⚖️ Terms of Service
+                <a
+                  href="#"
+                  className="hover:text-blue-400 transition-colors flex items-center gap-2"
+                >
+                  <ScaleIcon className="w-4 h-4" />
+                  Terms of Service
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-blue-400 transition-colors">
-                  ⚠️ Disclaimer
+                <a
+                  href="#"
+                  className="hover:text-blue-400 transition-colors flex items-center gap-2"
+                >
+                  <AlertIcon className="w-4 h-4" />
+                  Disclaimer
                 </a>
               </li>
             </ul>
           </div>
           <div className="animate-fadeIn" style={{ animationDelay: "0.4s" }}>
             <h4 className="font-semibold text-blue-400 mb-4 flex items-center gap-2">
-              🛒 Support
+              <ShoppingCartIcon className="w-4 h-4" />
+              Support
             </h4>
             <ul className="space-y-2 text-sm text-gray-400">
               <li>
-                <a href="#" className="hover:text-blue-400 transition-colors">
-                  💳 Premium Access
+                <a
+                  href="#"
+                  className="hover:text-blue-400 transition-colors flex items-center gap-2"
+                >
+                  <CreditCardIcon className="w-4 h-4" />
+                  Premium Access
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-blue-400 transition-colors">
-                  📞 Contact Support
+                <a
+                  href="#"
+                  className="hover:text-blue-400 transition-colors flex items-center gap-2"
+                >
+                  <PhoneIcon className="w-4 h-4" />
+                  Contact Support
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-blue-400 transition-colors">
-                  📧 Report Issues
+                <a
+                  href="#"
+                  className="hover:text-blue-400 transition-colors flex items-center gap-2"
+                >
+                  <MailIcon className="w-4 h-4" />
+                  Report Issues
                 </a>
               </li>
             </ul>

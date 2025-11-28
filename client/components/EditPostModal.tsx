@@ -272,9 +272,16 @@ export default function EditPostModal({
                 className="w-5 h-5 accent-red-600 rounded cursor-pointer disabled:opacity-50"
               />
               <label htmlFor="nsfw-toggle" className="flex-1 cursor-pointer">
-                <p className="text-sm font-bold text-red-400 mb-1">
-                  ⚠️ Mark as NSFW
-                </p>
+                <div className="flex items-center gap-2 mb-1">
+                  <svg
+                    className="w-4 h-4 text-red-400"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                  </svg>
+                  <p className="text-sm font-bold text-red-400">Mark as NSFW</p>
+                </div>
                 <p className="text-xs text-red-300">
                   This content is Not Safe For Work and requires age
                   verification

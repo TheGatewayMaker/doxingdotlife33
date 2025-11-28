@@ -147,7 +147,13 @@ export default function PostDetail() {
             {/* NSFW Banner */}
             {post.nsfw && (
               <div className="mb-6 bg-red-900/20 border border-red-600/40 rounded-lg p-4 flex items-start gap-3">
-                <span className="text-2xl">⚠️</span>
+                <svg
+                  className="w-6 h-6 text-red-400 flex-shrink-0 mt-0.5"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                </svg>
                 <div>
                   <p className="font-semibold text-red-400">NSFW Content</p>
                   <p className="text-sm text-red-300/80">

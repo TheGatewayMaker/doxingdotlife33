@@ -316,8 +316,15 @@ export default function UppostPanel() {
                   <span className="text-accent font-bold">{email}</span>
                 </p>
                 <div className="flex flex-wrap gap-3 items-center">
-                  <span className="inline-block px-3 py-1.5 bg-accent/20 text-accent font-semibold text-sm rounded-full">
-                    ✓ Authenticated
+                  <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-600/20 text-green-400 font-semibold text-sm rounded-full border border-green-600/30">
+                    <svg
+                      className="w-4 h-4"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Authenticated
                   </span>
                 </div>
               </div>

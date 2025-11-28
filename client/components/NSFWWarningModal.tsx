@@ -15,9 +15,16 @@ export default function NSFWWarningModal({
         {/* Header */}
         <div className="flex items-start justify-between mb-6">
           <div>
-            <h2 className="text-3xl font-black text-red-400 mb-2">
-              ⚠️ NSFW Warning
-            </h2>
+            <div className="flex items-center gap-3 mb-2">
+              <svg
+                className="w-7 h-7 text-red-400"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+              </svg>
+              <h2 className="text-3xl font-black text-red-400">NSFW Warning</h2>
+            </div>
             <p className="text-sm text-red-200">Adult Content Alert</p>
           </div>
           <button

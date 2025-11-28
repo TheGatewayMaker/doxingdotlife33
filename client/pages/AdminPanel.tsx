@@ -280,67 +280,82 @@ export default function AdminPanel() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col animate-fadeIn">
+    <div className="min-h-screen bg-gradient-to-b from-background via-background to-background/80 text-foreground flex flex-col animate-fadeIn">
       <Header />
 
       <main className="flex-1 w-full">
         {/* Hero Section */}
-        <div className="bg-gradient-to-br from-background via-card/50 to-background pt-8 pb-8 md:pt-16 md:pb-12 border-b border-border/50">
+        <div className="bg-gradient-to-br from-blue-600/10 via-background to-background pt-8 pb-8 md:pt-16 md:pb-12 border-b border-border/40">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="animate-fadeIn" style={{ animationDelay: "0.1s" }}>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-3 text-foreground tracking-tighter leading-tight flex items-center gap-2">
-                <EditIcon className="w-8 h-8 text-accent" />
-                Admin Panel
-              </h1>
-              <p className="text-base sm:text-lg md:text-xl font-semibold text-muted-foreground mb-6 max-w-2xl">
-                Manage, edit, and delete posts and their content
-              </p>
+              <div className="flex items-center gap-4 mb-3">
+                <div className="p-3 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl shadow-xl">
+                  <EditIcon className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-foreground tracking-tighter leading-tight">
+                    Admin Panel
+                  </h1>
+                  <p className="text-base sm:text-lg md:text-xl font-semibold text-muted-foreground mt-2">
+                    Comprehensive post management and analytics
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* Search Bar */}
             <div
-              className="relative mb-8 animate-fadeIn"
+              className="relative mb-8 animate-fadeIn mt-8"
               style={{ animationDelay: "0.2s" }}
             >
-              <input
-                type="text"
-                placeholder="Search posts by title, description, or ID..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-4 sm:px-5 py-3 sm:py-3.5 bg-card/50 border-2 border-border/60 hover:border-accent/60 rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent text-sm sm:text-base transition-all shadow-lg hover:shadow-2xl hover:shadow-accent/20"
-              />
-              <SearchIcon className="absolute right-4 sm:right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search posts by title, description, or ID..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full px-4 sm:px-6 py-3.5 sm:py-4 bg-card border-2 border-border hover:border-accent/40 rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent text-sm sm:text-base transition-all shadow-lg hover:shadow-2xl hover:shadow-blue-600/10 pl-12"
+                />
+                <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
+              </div>
             </div>
 
             {/* Filter Section */}
             <div
-              className="bg-gradient-to-br from-card/40 to-card/20 border border-border/40 rounded-2xl p-6 mb-0 animate-fadeIn"
+              className="bg-gradient-to-br from-card via-card/50 to-card/30 border border-border/60 rounded-2xl p-6 sm:p-8 mb-0 animate-fadeIn shadow-xl shadow-black/5"
               style={{ animationDelay: "0.3s" }}
             >
-              <div className="flex items-center gap-2 mb-6">
-                <FilterIcon className="w-4 h-4 text-accent" />
-                <h3 className="text-xs font-black text-foreground uppercase tracking-widest">
-                  Filter by Category
-                </h3>
+              <div className="flex items-center gap-3 mb-7">
+                <div className="p-2 bg-blue-600/20 rounded-lg">
+                  <FilterIcon className="w-5 h-5 text-blue-500" />
+                </div>
+                <div>
+                  <h3 className="text-xs font-black text-foreground uppercase tracking-widest">
+                    Advanced Filtering
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Filter posts by category and region
+                  </p>
+                </div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
                 {/* Country Dropdown */}
                 <div className="relative group">
-                  <label className="text-sm font-bold text-foreground block mb-3 flex items-center gap-2">
-                    <GlobeIcon className="w-4 h-4 text-accent" />
-                    By Country
+                  <label className="text-sm font-bold text-foreground block mb-3 flex items-center gap-2 group-hover:text-accent transition-colors">
+                    <GlobeIcon className="w-4 h-4 text-blue-500" />
+                    Country Filter
                   </label>
                   <input
                     type="text"
                     placeholder={
-                      selectedCountry ? selectedCountry : "Select country..."
+                      selectedCountry ? selectedCountry : "Search countries..."
                     }
                     value={countrySearch}
                     onChange={(e) => setCountrySearch(e.target.value)}
-                    className="w-full px-4 py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent text-sm transition-all shadow-md hover:shadow-lg hover:shadow-accent/20"
+                    className="w-full px-4 py-3 bg-background/60 border-2 border-border/60 hover:border-blue-500/40 rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-sm transition-all shadow-sm hover:shadow-lg hover:shadow-blue-500/10"
                   />
                   {countrySearch && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-lg z-50 max-h-48 overflow-y-auto shadow-lg">
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-lg z-50 max-h-48 overflow-y-auto shadow-xl shadow-black/10">
                       {filteredCountries.length > 0 ? (
                         filteredCountries.map((country) => (
                           <button
@@ -349,13 +364,14 @@ export default function AdminPanel() {
                               setSelectedCountry(country);
                               setCountrySearch("");
                             }}
-                            className="w-full text-left px-4 py-2 hover:bg-accent/20 text-foreground text-sm transition-colors"
+                            className="w-full text-left px-4 py-3 hover:bg-blue-600/20 hover:border-l-2 hover:border-l-blue-500 text-foreground text-sm transition-all duration-200 flex items-center gap-2"
                           >
+                            <GlobeIcon className="w-3 h-3 text-muted-foreground" />
                             {country}
                           </button>
                         ))
                       ) : (
-                        <div className="px-4 py-2 text-muted-foreground text-sm">
+                        <div className="px-4 py-3 text-muted-foreground text-sm text-center">
                           No countries found
                         </div>
                       )}
@@ -367,7 +383,7 @@ export default function AdminPanel() {
                         setSelectedCountry("");
                         setCountrySearch("");
                       }}
-                      className="absolute top-3 right-3 text-accent hover:text-accent/80 transition-colors"
+                      className="absolute top-3 right-3 text-accent hover:text-accent/80 hover:scale-110 transition-all"
                       title="Clear selection"
                     >
                       <CloseIcon className="w-4 h-4" />
@@ -384,43 +400,80 @@ export default function AdminPanel() {
           <div className="mb-10 sm:mb-12 animate-fadeIn">
             {isLoadingPosts ? (
               <>
-                <h2 className="text-5xl md:text-6xl font-black mb-3 mt-0 flex items-center gap-3">
+                <div className="flex items-center gap-4 mb-4">
                   <span className="inline-block animate-spin">
-                    <div className="w-10 h-10 border-3 border-muted border-t-accent rounded-full"></div>
+                    <div className="w-12 h-12 border-4 border-muted border-t-blue-600 rounded-full"></div>
                   </span>
-                  Loading Posts
-                </h2>
-                <p className="text-muted-foreground">
-                  Fetching posts for management...
-                </p>
+                  <div>
+                    <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+                      Loading Posts
+                    </h2>
+                    <p className="text-muted-foreground mt-1">
+                      Fetching your posts for management...
+                    </p>
+                  </div>
+                </div>
               </>
             ) : filteredPosts.length === 0 ? (
               <>
-                <h2 className="text-5xl md:text-6xl font-black mb-3">
-                  No Posts Found
-                </h2>
-                <p className="text-muted-foreground">
-                  {searchQuery || selectedCountry
-                    ? "Try adjusting your search filters"
-                    : "No posts available at the moment"}
-                </p>
+                <div className="text-center py-16">
+                  <div className="mb-6 flex justify-center">
+                    <div className="p-4 bg-muted rounded-2xl">
+                      <svg
+                        className="w-16 h-16 text-muted-foreground"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="1.5"
+                          d="M20 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                  <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
+                    No Posts Found
+                  </h2>
+                  <p className="text-muted-foreground max-w-md mx-auto">
+                    {searchQuery || selectedCountry
+                      ? "Your search didn't match any posts. Try adjusting your filters or search terms."
+                      : "No posts available at the moment. Start by uploading new content."}
+                  </p>
+                </div>
               </>
             ) : (
               <>
-                <h2 className="text-5xl md:text-6xl font-black mb-3">
-                  Manage Posts
-                </h2>
-                <p className="text-muted-foreground">
-                  Showing {displayedPosts.length} of {filteredPosts.length}{" "}
-                  posts
-                </p>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                  <div>
+                    <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+                      Manage Posts
+                    </h2>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      <span className="font-semibold text-foreground">
+                        {filteredPosts.length}
+                      </span>{" "}
+                      post{filteredPosts.length !== 1 ? "s" : ""} found
+                      {searchQuery || selectedCountry ? " (filtered)" : ""}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3 bg-blue-600/10 px-4 py-3 rounded-lg border border-blue-600/20">
+                    <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                    <span className="text-sm font-medium text-foreground">
+                      Displaying {displayedPosts.length} of{" "}
+                      {filteredPosts.length}
+                    </span>
+                  </div>
+                </div>
               </>
             )}
           </div>
 
           {displayedPosts.length > 0 ? (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 mb-10 sm:mb-12">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 mb-12 sm:mb-14">
                 {displayedPosts.map((post, idx) => (
                   <AdminPostCard
                     key={post.id}
@@ -435,48 +488,77 @@ export default function AdminPanel() {
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-3 animate-fadeIn">
+                <div className="flex flex-col sm:flex-row flex-wrap justify-center items-center gap-3 sm:gap-4 animate-fadeIn pt-8 border-t border-border/40">
                   <button
                     onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                     disabled={currentPage === 1}
-                    className="px-3 sm:px-4 py-2 bg-gradient-to-r from-accent to-accent/90 text-accent-foreground font-medium rounded-xl hover:shadow-lg hover:shadow-accent/40 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md active:scale-95 text-sm sm:text-base"
+                    className="px-4 sm:px-5 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-blue-600/40 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md active:scale-95 text-sm sm:text-base flex items-center gap-2"
                   >
-                    ← Prev
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M15 19l-7-7 7-7"
+                      />
+                    </svg>
+                    Previous
                   </button>
-                  <div className="flex items-center gap-1 flex-wrap justify-center">
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                      (page) => (
+                  <div className="flex items-center gap-1.5 flex-wrap justify-center">
+                    {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+                      const pageNum =
+                        currentPage > 3 ? currentPage + i - 3 : i + 1;
+                      if (pageNum > totalPages) return null;
+                      return (
                         <button
-                          key={page}
-                          onClick={() => setCurrentPage(page)}
+                          key={pageNum}
+                          onClick={() => setCurrentPage(pageNum)}
                           className={cn(
-                            "w-9 h-9 sm:w-10 sm:h-10 rounded-lg font-medium transition-all text-xs sm:text-sm shadow-sm hover:shadow-md",
-                            currentPage === page
-                              ? "bg-gradient-to-r from-accent to-accent/90 text-accent-foreground shadow-lg"
-                              : "bg-card/60 border-2 border-border/60 hover:border-accent/60 text-foreground hover:shadow-lg hover:shadow-accent/10",
+                            "w-9 h-9 sm:w-10 sm:h-10 rounded-lg font-semibold transition-all text-xs sm:text-sm shadow-sm hover:shadow-md",
+                            currentPage === pageNum
+                              ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-600/30"
+                              : "bg-card border-2 border-border hover:border-blue-500/40 text-foreground hover:shadow-lg hover:shadow-blue-500/10",
                           )}
                         >
-                          {page}
+                          {pageNum}
                         </button>
-                      ),
-                    )}
+                      );
+                    }).filter(Boolean)}
                   </div>
                   <button
                     onClick={() =>
                       setCurrentPage(Math.min(totalPages, currentPage + 1))
                     }
                     disabled={currentPage === totalPages}
-                    className="px-3 sm:px-4 py-2 bg-gradient-to-r from-accent to-accent/90 text-accent-foreground font-medium rounded-xl hover:shadow-lg hover:shadow-accent/40 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md active:scale-95 text-sm sm:text-base"
+                    className="px-4 sm:px-5 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-blue-600/40 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md active:scale-95 text-sm sm:text-base flex items-center gap-2"
                   >
-                    Next →
+                    Next
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
                   </button>
                 </div>
               )}
             </>
           ) : (
-            <div className="text-center py-16 animate-fadeIn">
+            <div className="text-center py-12 animate-fadeIn">
               <p className="text-muted-foreground text-base sm:text-lg">
-                No posts match your search criteria. Try adjusting your filters.
+                No posts match your search criteria.
               </p>
             </div>
           )}
@@ -485,12 +567,12 @@ export default function AdminPanel() {
 
       {/* Delete Confirmation Modal */}
       {deletingPostId && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
-          <div className="bg-gradient-to-br from-card to-card/95 border-2 border-border/40 rounded-2xl max-w-sm w-full p-8 shadow-2xl animate-fadeIn">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-xl bg-red-100 dark:bg-red-900/30">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-fadeIn">
+          <div className="bg-gradient-to-br from-card via-card to-card/95 border-2 border-border/60 rounded-2xl max-w-sm w-full p-8 shadow-2xl animate-slideInScale">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="flex-shrink-0 flex items-center justify-center h-14 w-14 rounded-xl bg-gradient-to-br from-red-600/20 to-red-700/20 border border-red-600/30">
                 <svg
-                  className="h-6 w-6 text-red-600"
+                  className="h-7 w-7 text-red-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -498,31 +580,36 @@ export default function AdminPanel() {
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth="2"
+                    strokeWidth="2.5"
                     d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                   />
                 </svg>
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-foreground">
-                Delete Post?
-              </h3>
+              <div>
+                <h3 className="text-lg sm:text-xl font-bold text-foreground">
+                  Delete Post
+                </h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  This action cannot be undone
+                </p>
+              </div>
             </div>
-            <p className="text-sm text-muted-foreground mb-6 ml-15">
-              Are you sure you want to delete this post? This action cannot be
-              undone.
+            <p className="text-sm text-muted-foreground mb-8 leading-relaxed">
+              You are about to permanently delete this post. All associated
+              media files and data will be removed. Please confirm this action.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setDeletingPostId(null)}
                 disabled={isDeletingPost}
-                className="flex-1 px-4 py-2 bg-card/60 border-2 border-border/60 text-foreground font-medium rounded-xl hover:bg-muted/60 hover:border-border/80 disabled:opacity-40 transition-all"
+                className="flex-1 px-4 py-2.5 bg-card/80 border-2 border-border/60 text-foreground font-semibold rounded-lg hover:bg-muted/60 hover:border-border/80 disabled:opacity-40 transition-all"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDeletePost}
                 disabled={isDeletingPost}
-                className="flex-1 px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white font-medium rounded-xl hover:shadow-lg hover:shadow-red-600/40 disabled:opacity-40 transition-all flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-2.5 bg-gradient-to-r from-red-600 to-red-700 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-red-600/50 disabled:opacity-40 transition-all flex items-center justify-center gap-2"
               >
                 <TrashIcon className="w-4 h-4" />
                 {isDeletingPost ? "Deleting..." : "Delete"}

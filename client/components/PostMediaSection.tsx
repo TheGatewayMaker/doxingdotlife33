@@ -82,7 +82,16 @@ export default function PostMediaSection({
         {photos.length > 0 && (
           <div className="mb-12">
             <h3 className="text-2xl font-semibold mb-6 flex items-center gap-2 text-foreground">
-              <span className="text-2xl">🖼️</span>
+              <svg
+                className="w-6 h-6 text-accent"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
               Photos ({photos.length})
             </h3>
 
@@ -196,7 +205,15 @@ export default function PostMediaSection({
         {videos.length > 0 && (
           <div>
             <h3 className="text-2xl font-semibold mb-6 flex items-center gap-2 text-foreground">
-              <span className="text-2xl">🎬</span>
+              <svg
+                className="w-6 h-6 text-accent"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+              </svg>
               Videos ({videos.length})
             </h3>
 
