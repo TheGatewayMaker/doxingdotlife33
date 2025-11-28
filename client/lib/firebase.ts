@@ -148,6 +148,13 @@ export const isEmailAuthorized = (email: string): boolean => {
  * Get Firebase ID token for backend verification
  */
 export const getIdToken = async (): Promise<string | null> => {
+  if (!auth) {
+    console.warn(
+      "Firebase is not initialized. Cannot get ID token. Please configure Firebase environment variables.",
+    );
+    return null;
+  }
+
   try {
     const user = auth.currentUser;
     if (!user) return null;
