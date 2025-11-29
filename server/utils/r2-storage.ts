@@ -367,11 +367,27 @@ export const getServersList = async (): Promise<string[]> => {
 
     if (response.Body) {
       const bodyString = await response.Body.transformToString();
-      return JSON.parse(bodyString) as string[];
+      const parsed = JSON.parse(bodyString);
+
+      // Validate that the parsed data is actually an array
+      if (!Array.isArray(parsed)) {
+        console.warn(`Servers list JSON is not an array, received: ${typeof parsed}, returning empty list`);
+        return [];
+      }
+
+      // Filter to ensure all items are strings
+      const validServers = parsed.filter((item): item is string => typeof item === 'string');
+      if (validServers.length !== parsed.length) {
+        console.warn(`Servers list contained non-string items, filtered to ${validServers.length} valid entries`);
+      }
+
+      return validServers;
     }
 
     return [];
   } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    console.warn(`Error reading servers list: ${errorMsg}, returning empty list`);
     return [];
   }
 };
