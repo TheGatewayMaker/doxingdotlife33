@@ -101,14 +101,53 @@ export function createServer() {
     next();
   };
 
+  // Multer error handling middleware
+  const multerErrorHandler = (
+    err: any,
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    if (err.name === "MulterError") {
+      console.error("Multer error:", err);
+      if (err.code === "FILE_TOO_LARGE") {
+        return res.status(413).json({
+          error: "File too large",
+          details: `Maximum file size is ${err.limit} bytes`,
+        });
+      }
+      if (err.code === "LIMIT_FILE_COUNT") {
+        return res.status(400).json({
+          error: "Too many files",
+          details: err.message,
+        });
+      }
+      return res.status(400).json({
+        error: "File upload error",
+        details:
+          process.env.NODE_ENV === "development"
+            ? err.message
+            : "Failed to parse file upload",
+      });
+    }
+    next(err);
+  };
+
   app.post(
     "/api/upload",
     uploadTimeout,
     authMiddleware,
-    upload.fields([
-      { name: "media", maxCount: 100 }, // Support up to 100 files
-      { name: "thumbnail", maxCount: 1 },
-    ]),
+    (req, res, next) => {
+      upload.fields([
+        { name: "media", maxCount: 100 },
+        { name: "thumbnail", maxCount: 1 },
+      ])(req, res, (err) => {
+        if (err) {
+          return multerErrorHandler(err, req, res, next);
+        }
+        next();
+      });
+    },
     handleUpload,
   );
 
