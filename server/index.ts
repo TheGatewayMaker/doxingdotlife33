@@ -200,6 +200,23 @@ export function createServer() {
     next(err);
   };
 
+  // Catch-all async error handler wrapper - defined before routes that use it
+  const asyncHandler = (
+    fn: (
+      req: express.Request,
+      res: express.Response,
+      next: express.NextFunction,
+    ) => Promise<any>,
+  ) => {
+    return (
+      req: express.Request,
+      res: express.Response,
+      next: express.NextFunction,
+    ) => {
+      Promise.resolve(fn(req, res, next)).catch(next);
+    };
+  };
+
   app.post(
     "/api/upload",
     uploadTimeout,
