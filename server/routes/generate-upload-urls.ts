@@ -130,7 +130,8 @@ export const handleGenerateUploadUrls: RequestHandler = async (
       }
 
       // Normalize field names: accept fileName, filename, or name
-      let fileName = (file as any).filename || (file as any).fileName || (file as any).name;
+      let fileName =
+        (file as any).filename || (file as any).fileName || (file as any).name;
       const contentType = (file as any).contentType;
       const fileSize = (file as any).fileSize;
 
@@ -193,7 +194,10 @@ export const handleGenerateUploadUrls: RequestHandler = async (
       `[${new Date().toISOString()}] Generating presigned URLs for ${normalizedFilesCount} file(s)`,
     );
 
-    const presignedUrls = await generatePresignedUploadUrls(postId, normalizedFiles);
+    const presignedUrls = await generatePresignedUploadUrls(
+      postId,
+      normalizedFiles,
+    );
 
     const response: GenerateUrlsResponse = {
       postId,
