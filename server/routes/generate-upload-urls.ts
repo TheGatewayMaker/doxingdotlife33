@@ -186,10 +186,10 @@ export const handleGenerateUploadUrls: RequestHandler = async (
     const postId = Date.now().toString();
 
     console.log(
-      `[${new Date().toISOString()}] Generating presigned URLs for ${files.length} file(s)`,
+      `[${new Date().toISOString()}] Generating presigned URLs for ${normalizedFilesCount} file(s)`,
     );
 
-    const presignedUrls = await generatePresignedUploadUrls(postId, files);
+    const presignedUrls = await generatePresignedUploadUrls(postId, normalizedFiles);
 
     const response: GenerateUrlsResponse = {
       postId,
