@@ -25,36 +25,70 @@ export const handleGenerateUploadUrls: RequestHandler = async (
 ) => {
   try {
     console.log(
-      `[${new Date().toISOString()}] === UPLOAD URL REQUEST ===`,
+      `[${new Date().toISOString()}] === 📤 GENERATE UPLOAD URLS REQUEST ===`,
     );
+    console.log(`[${new Date().toISOString()}] Request method: ${req.method}`);
     console.log(
-      `[${new Date().toISOString()}] Request body type: ${typeof req.body}`,
-    );
-    console.log(
-      `[${new Date().toISOString()}] Request body keys: ${Object.keys(req.body || {})}`,
-    );
-    console.log(
-      `[${new Date().toISOString()}] Full request body: ${JSON.stringify(req.body, null, 2).substring(0, 1000)}`,
+      `[${new Date().toISOString()}] Request path: ${req.path}`,
     );
     console.log(
       `[${new Date().toISOString()}] Content-Type header: ${req.headers["content-type"]}`,
     );
+    console.log(
+      `[${new Date().toISOString()}] Content-Length header: ${req.headers["content-length"]}`,
+    );
+    console.log(
+      `[${new Date().toISOString()}] Request body type: ${typeof req.body}`,
+    );
+
+    if (!req.body) {
+      console.error(`[${new Date().toISOString()}] ❌ REQUEST BODY IS EMPTY/NULL`);
+      return res.status(400).json({
+        error: "Invalid request",
+        details: "Request body is empty",
+      });
+    }
+
+    console.log(
+      `[${new Date().toISOString()}] Request body keys: ${Object.keys(req.body)}`,
+    );
+
+    if (typeof req.body === "string") {
+      console.warn(`[${new Date().toISOString()}] ⚠️ Body is still a string, attempting parse...`);
+      try {
+        req.body = JSON.parse(req.body);
+        console.log(`[${new Date().toISOString()}] ✅ Successfully parsed string body`);
+      } catch (parseErr) {
+        console.error(`[${new Date().toISOString()}] ❌ Failed to parse string body:`, parseErr);
+        return res.status(400).json({
+          error: "Invalid JSON in request body",
+          details: parseErr instanceof Error ? parseErr.message : "JSON parse error",
+        });
+      }
+    }
+
+    console.log(
+      `[${new Date().toISOString()}] Full request body: ${JSON.stringify(req.body, null, 2).substring(0, 1000)}`,
+    );
 
     const { files } = req.body as GenerateUrlsRequest;
 
-    console.log(`[${new Date().toISOString()}] Files value: ${JSON.stringify(files, null, 2).substring(0, 500)}`);
-    console.log(
-      `[${new Date().toISOString()}] Files type: ${typeof files}, is array: ${Array.isArray(files)}, length: ${files?.length}`,
-    );
+    if (files) {
+      console.log(`[${new Date().toISOString()}] Files received:`, {
+        isArray: Array.isArray(files),
+        length: files.length,
+        firstFile: files[0],
+      });
+    }
 
     if (!files || !Array.isArray(files) || files.length === 0) {
       console.error(`[${new Date().toISOString()}] ❌ FILES VALIDATION FAILED:`, {
-        hasFilesProperty: !!req.body.files,
-        filesValue: req.body.files,
+        hasFilesProperty: "files" in (req.body || {}),
+        filesValue: req.body?.files,
         isArray: Array.isArray(files),
         length: files?.length,
         allBodyKeys: Object.keys(req.body || {}),
-        fullBody: req.body,
+        fullBody: JSON.stringify(req.body),
       });
       return res.status(400).json({
         error: "Invalid request",
@@ -62,6 +96,7 @@ export const handleGenerateUploadUrls: RequestHandler = async (
         debug: {
           receivedKeys: Object.keys(req.body || {}),
           filesProperty: req.body?.files,
+          bodyType: typeof req.body,
         },
       });
     }
