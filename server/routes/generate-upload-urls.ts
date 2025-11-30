@@ -130,14 +130,18 @@ export const handleGenerateUploadUrls: RequestHandler = async (
       }
 
       // Normalize field names: accept fileName, filename, or name
-      let fileName = (file as any).fileName || (file as any).filename || (file as any).name;
+      let fileName = (file as any).filename || (file as any).fileName || (file as any).name;
       const contentType = (file as any).contentType;
       const fileSize = (file as any).fileSize;
+
+      console.log(
+        `[${new Date().toISOString()}] File ${i} normalized: fileName=${fileName}, contentType=${contentType}, fileSize=${fileSize}`,
+      );
 
       if (!fileName || typeof fileName !== "string" || fileName.trim() === "") {
         return res.status(400).json({
           error: "Invalid file metadata",
-          details: `File ${i}: fileName (or filename/name) must be a non-empty string. Received: ${JSON.stringify(fileName)}`,
+          details: `File ${i}: filename (or fileName/name) must be a non-empty string. Received: ${JSON.stringify(fileName)}`,
         });
       }
 
