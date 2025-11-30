@@ -1,29 +1,25 @@
 [build]
   command = "npm run build"
   publish = "dist/spa"
-  # optional: Netlify also supports setting a default functions directory here
   functions = "netlify/functions"
 
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
   included_files = ["server/**/*", "shared/**/*"]
-  timeout = 26
+  # removed `timeout = 26` here because Netlify expects [functions.timeout] to be an object
 
-# Per-function overrides — note the table name is `[[functions]]` (plural)
 [[functions]]
   name = "api"
   timeout = 26
   memory = 3008
 
-# Redirect API calls to Netlify Functions (rewrite)
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api/:splat"
   status = 200
   force = true
 
-# SPA fallback
 [[redirects]]
   from = "/*"
   to = "/index.html"
