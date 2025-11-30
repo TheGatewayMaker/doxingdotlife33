@@ -42,15 +42,12 @@ export const handleGenerateUploadUrls: RequestHandler = async (
     );
 
     if (!files || !Array.isArray(files) || files.length === 0) {
-      console.error(
-        `[${new Date().toISOString()}] Files validation failed:`,
-        {
-          haFiles: !!files,
-          isArray: Array.isArray(files),
-          length: files?.length,
-          rawBody: req.body,
-        },
-      );
+      console.error(`[${new Date().toISOString()}] Files validation failed:`, {
+        haFiles: !!files,
+        isArray: Array.isArray(files),
+        length: files?.length,
+        rawBody: req.body,
+      });
       return res.status(400).json({
         error: "Invalid request",
         details: "files array is required and must contain at least one file",

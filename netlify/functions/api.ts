@@ -55,21 +55,17 @@ const getServerlessHandler = () => {
     const app = getApp();
     serverlessHandler = serverless(app, {
       basePath: "/.netlify/functions/api",
-      binary: [
-        "image/*",
-        "video/*",
-        "application/octet-stream",
-        "multipart/*",
-      ],
+      binary: ["image/*", "video/*", "application/octet-stream", "multipart/*"],
       request: (request: any, event: any, context: any) => {
         // Log request details for debugging
         console.log(
           `[${new Date().toISOString()}] ${event.httpMethod} ${event.path} - Content-Type: ${event.headers["content-type"] || "unknown"}`,
         );
         if (event.body) {
-          const bodyPreview = typeof event.body === "string" ?
-            event.body.substring(0, 200) :
-            JSON.stringify(event.body).substring(0, 200);
+          const bodyPreview =
+            typeof event.body === "string"
+              ? event.body.substring(0, 200)
+              : JSON.stringify(event.body).substring(0, 200);
           console.log(
             `[${new Date().toISOString()}] Event body (first 200 chars): ${bodyPreview}`,
           );
