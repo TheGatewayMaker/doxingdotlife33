@@ -1,5 +1,5 @@
 interface FileMetadata {
-  fileName: string;
+  filename: string;
   contentType: string;
   fileSize: number;
 }
