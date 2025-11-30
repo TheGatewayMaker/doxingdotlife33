@@ -1,9 +1,10 @@
-import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import multer from "multer";
 import { handleDemo } from "./routes/demo";
 import { handleUpload } from "./routes/upload";
+import { handleGenerateUploadUrls } from "./routes/generate-upload-urls";
+import { handleUploadMetadata } from "./routes/upload-metadata";
 import { handleGetPosts } from "./routes/posts";
 import { handleGetServers } from "./routes/servers";
 import {
@@ -11,18 +12,28 @@ import {
   handleDeleteMediaFile,
   handleUpdatePost,
 } from "./routes/admin";
+import { handleLogout, handleCheckAuth, authMiddleware } from "./routes/auth";
+import { validateR2Configuration } from "./utils/r2-storage";
+
+// On Netlify Functions, use smaller limits due to request size constraints
+// Local dev can handle larger files
+const isNetlify = process.env.NETLIFY === "true";
+const MAX_FILE_SIZE = isNetlify
+  ? 100 * 1024 * 1024 // 100MB per file on Netlify
+  : 500 * 1024 * 1024; // 500MB per file locally
 
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 100 * 1024 * 1024,
+    fileSize: MAX_FILE_SIZE,
+    fieldSize: MAX_FILE_SIZE, // Also set field size limit
   },
 });
 
 export function createServer() {
   const app = express();
 
-  // Middleware
+  // Middleware - order matters, apply parsers first
   app.use(
     cors({
       origin: "*",
@@ -31,8 +42,167 @@ export function createServer() {
       credentials: false,
     }),
   );
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
+
+  // JSON and URL-encoded body parsing with proper limits
+  // Note: multipart/form-data is NOT parsed by these - it's handled by multer
+  // Keep these reasonable since actual file data goes through multer's memory storage
+  app.use(express.json({ limit: "10mb" }));
+  app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+
+  // Debugging middleware to handle potential body parsing issues in serverless environments
+  app.use(
+    (
+      req: express.Request,
+      res: express.Response,
+      next: express.NextFunction,
+    ) => {
+      const isJsonRequest =
+        req.headers["content-type"]?.includes("application/json");
+
+      // Handle Buffer-like objects (from Netlify or other serverless platforms)
+      if (req.body && typeof req.body === "object" && isJsonRequest) {
+        // Check if body is a Buffer-like structure with numeric keys or type: 'Buffer'
+        const isBufferLike =
+          (req.body as any).type === "Buffer" ||
+          (Buffer.isBuffer(req.body)) ||
+          (typeof req.body === "object" &&
+            Object.keys(req.body).every((key) => !isNaN(Number(key))));
+
+        if (isBufferLike) {
+          try {
+            console.log(
+              `[${new Date().toISOString()}] 🔄 Detected Buffer-like body, attempting to decode...`,
+            );
+            // Convert Buffer-like to actual Buffer then to string
+            const buffer = Buffer.isBuffer(req.body)
+              ? req.body
+              : Buffer.from(req.body);
+            const jsonString = buffer.toString("utf-8");
+            req.body = JSON.parse(jsonString);
+            console.log(
+              `[${new Date().toISOString()}] ✅ Successfully decoded Buffer-like body`,
+            );
+          } catch (e) {
+            console.error(
+              `[${new Date().toISOString()}] ❌ Failed to decode Buffer-like body:`,
+              e instanceof Error ? e.message : String(e),
+            );
+            // Continue to next middleware
+          }
+        }
+      }
+
+      // If body is a string (happens in some serverless scenarios), parse it
+      if (req.body && typeof req.body === "string" && isJsonRequest) {
+        try {
+          console.log(
+            `[${new Date().toISOString()}] ⚠️ Body is a string, attempting to parse JSON...`,
+          );
+          const parsed = JSON.parse(req.body);
+          req.body = parsed;
+          console.log(
+            `[${new Date().toISOString()}] ✅ Successfully parsed JSON string body`,
+          );
+        } catch (e) {
+          console.error(
+            `[${new Date().toISOString()}] ❌ Failed to parse JSON string body:`,
+            e instanceof Error ? e.message : String(e),
+          );
+          // Don't stop, express.json() might have already parsed it
+        }
+      }
+
+      // Log body parsing for API endpoints
+      if (req.path.startsWith("/api/") && isJsonRequest) {
+        console.log(
+          `[${new Date().toISOString()}] API Request ${req.method} ${req.path}:`,
+          {
+            contentType: req.headers["content-type"],
+            contentLength: req.headers["content-length"],
+            bodyType: typeof req.body,
+            bodyKeys:
+              req.body && typeof req.body === "object"
+                ? Object.keys(req.body)
+                : "N/A",
+            bodyPreview: req.body
+              ? JSON.stringify(req.body).substring(0, 200)
+              : "empty",
+          },
+        );
+      }
+
+      next();
+    },
+  );
+
+  // Error handling for body parsing
+  app.use(
+    (
+      err: any,
+      req: express.Request,
+      res: express.Response,
+      next: express.NextFunction,
+    ) => {
+      if (err instanceof SyntaxError && "body" in err) {
+        console.error("JSON parse error:", err);
+        return res.status(400).json({
+          error: "Invalid JSON in request body",
+          details:
+            process.env.NODE_ENV === "development" ? err.message : undefined,
+        });
+      }
+      next(err);
+    },
+  );
+
+  // Request logging middleware
+  app.use((req, res, next) => {
+    const start = Date.now();
+    const originalJson = res.json;
+
+    res.json = function (body) {
+      const duration = Date.now() - start;
+      console.log(
+        `[${new Date().toISOString()}] ${req.method} ${req.path} - ${res.statusCode} (${duration}ms)`,
+      );
+      return originalJson.call(this, body);
+    };
+
+    next();
+  });
+
+  // Health check endpoint
+  app.get("/api/health", async (_req, res) => {
+    try {
+      const hasFirebaseConfig = !!process.env.FIREBASE_PROJECT_ID;
+      const hasAuthorizedEmails = !!process.env.VITE_AUTHORIZED_EMAILS;
+      const r2Validation = await validateR2Configuration();
+
+      res.json({
+        status: r2Validation.isValid ? "ok" : "partial",
+        environment: process.env.NODE_ENV || "development",
+        firebaseConfigured: hasFirebaseConfig,
+        authorizedEmailsConfigured: hasAuthorizedEmails,
+        r2: {
+          configured: r2Validation.isValid,
+          message: r2Validation.message,
+          details:
+            process.env.NODE_ENV === "development"
+              ? r2Validation.details
+              : undefined,
+        },
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error("Health check error:", error);
+      res.status(500).json({
+        status: "error",
+        environment: process.env.NODE_ENV || "development",
+        error: "Health check failed",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  });
 
   // Example API routes
   app.get("/api/ping", (_req, res) => {
@@ -42,36 +212,178 @@ export function createServer() {
 
   app.get("/api/demo", handleDemo);
 
-  // Debug endpoint to check environment variables
-  app.get("/api/debug/env", (_req, res) => {
-    const r2Keys = Object.keys(process.env).filter((k) => k.startsWith("R2_"));
-    const r2Values: Record<string, string | undefined> = {};
-    r2Keys.forEach((key) => {
-      r2Values[key] = process.env[key] ? "SET" : "MISSING";
-    });
-    res.json({
-      r2_configured: r2Keys.length === 4,
-      r2_variables: r2Values,
-      all_r2_keys: r2Keys,
-    });
-  });
+  // Authentication routes
+  app.post("/api/auth/logout", handleLogout);
+  app.get("/api/auth/check", handleCheckAuth);
 
   // Forum API routes
+  // Longer timeout for upload endpoint (10 minutes) to handle large files and multiple attachments
+  const uploadTimeout = (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    // In serverless environments like Netlify Functions, sockets are not available
+    // Skip socket timeout handling in serverless contexts
+    if (process.env.NETLIFY === "true" || !req.socket) {
+      console.log("Serverless environment detected: skipping socket timeout");
+      next();
+      return;
+    }
+
+    const timeout = 10 * 60 * 1000; // 10 minutes
+
+    // Set timeout on the underlying socket, not the request/response objects
+    try {
+      if (req.socket) {
+        req.socket.setTimeout(timeout);
+      }
+      if (res.socket) {
+        res.socket.setTimeout(timeout);
+      }
+
+      // Handle timeout errors
+      const handleTimeout = () => {
+        console.error("Request timeout for upload");
+        if (!res.headersSent) {
+          res.status(408).json({
+            error: "Request timeout",
+            details: "Upload took too long to complete",
+          });
+        }
+      };
+
+      if (req.socket) {
+        req.socket.on("timeout", handleTimeout);
+      }
+      if (res.socket) {
+        res.socket.on("timeout", handleTimeout);
+      }
+    } catch (error) {
+      console.error("Error setting socket timeout:", error);
+    }
+
+    next();
+  };
+
+  // Multer error handling middleware
+  const multerErrorHandler = (
+    err: any,
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    if (err.name === "MulterError") {
+      console.error("Multer error:", err);
+      if (err.code === "FILE_TOO_LARGE") {
+        return res.status(413).json({
+          error: "File too large",
+          details: `Maximum file size is ${err.limit} bytes`,
+        });
+      }
+      if (err.code === "LIMIT_FILE_COUNT") {
+        return res.status(400).json({
+          error: "Too many files",
+          details: err.message,
+        });
+      }
+      return res.status(400).json({
+        error: "File upload error",
+        details:
+          process.env.NODE_ENV === "development"
+            ? err.message
+            : "Failed to parse file upload",
+      });
+    }
+    next(err);
+  };
+
+  // Catch-all async error handler wrapper - defined before routes that use it
+  const asyncHandler = (
+    fn: (
+      req: express.Request,
+      res: express.Response,
+      next: express.NextFunction,
+    ) => Promise<any>,
+  ) => {
+    return (
+      req: express.Request,
+      res: express.Response,
+      next: express.NextFunction,
+    ) => {
+      Promise.resolve(fn(req, res, next)).catch(next);
+    };
+  };
+
+  // Presigned URL generation route (for R2 direct uploads)
+  app.post(
+    "/api/generate-upload-urls",
+    authMiddleware,
+    asyncHandler(handleGenerateUploadUrls),
+  );
+
+  // Metadata storage route (after files have been uploaded to R2)
+  app.post(
+    "/api/upload-metadata",
+    authMiddleware,
+    asyncHandler(handleUploadMetadata),
+  );
+
   app.post(
     "/api/upload",
-    upload.fields([
-      { name: "media", maxCount: 1 },
-      { name: "thumbnail", maxCount: 1 },
-    ]),
-    handleUpload,
+    uploadTimeout,
+    authMiddleware,
+    // Pre-check: Validate request size early, especially for Netlify Functions
+    (req, res, next) => {
+      const contentLength = parseInt(req.headers["content-length"] || "0", 10);
+      const isNetlify = process.env.NETLIFY === "true";
+      // Netlify Functions have practical limits around 250MB for the entire request
+      // but real-world performance degrades significantly above 50MB
+      const maxSize = isNetlify ? 200 * 1024 * 1024 : 1024 * 1024 * 1024;
+
+      console.log(
+        `[${new Date().toISOString()}] Upload request content-length: ${(contentLength / 1024 / 1024).toFixed(2)}MB (max: ${(maxSize / 1024 / 1024).toFixed(2)}MB on ${isNetlify ? "NETLIFY" : "LOCAL"})`,
+      );
+
+      if (contentLength > maxSize) {
+        return res.status(413).json({
+          error: "Request too large",
+          details: `Total upload size (${(contentLength / 1024 / 1024).toFixed(2)}MB) exceeds maximum allowed (${(maxSize / 1024 / 1024).toFixed(2)}MB). ${isNetlify ? "Please upload fewer or smaller files." : ""}`,
+        });
+      }
+
+      next();
+    },
+    (req, res, next) => {
+      try {
+        upload.fields([
+          { name: "media", maxCount: 100 },
+          { name: "thumbnail", maxCount: 1 },
+        ])(req, res, (err) => {
+          if (err) {
+            return multerErrorHandler(err, req, res, next);
+          }
+          next();
+        });
+      } catch (error) {
+        console.error("Error in upload middleware:", error);
+        return multerErrorHandler(error, req, res, next);
+      }
+    },
+    asyncHandler(handleUpload),
   );
+
   app.get("/api/posts", handleGetPosts);
   app.get("/api/servers", handleGetServers);
 
-  // Admin routes
-  app.delete("/api/posts/:postId", handleDeletePost);
-  app.delete("/api/posts/:postId/media/:fileName", handleDeleteMediaFile);
-  app.put("/api/posts/:postId", handleUpdatePost);
+  // Admin routes (protected by auth middleware)
+  app.delete("/api/posts/:postId", authMiddleware, handleDeletePost);
+  app.delete(
+    "/api/posts/:postId/media/:fileName",
+    authMiddleware,
+    handleDeleteMediaFile,
+  );
+  app.put("/api/posts/:postId", authMiddleware, handleUpdatePost);
 
   // Media proxy endpoint for additional CORS support
   app.get("/api/media/:postId/:fileName", async (req, res) => {
@@ -83,11 +395,25 @@ export function createServer() {
       }
 
       // Validate that only legitimate paths are accessed
-      if (fileName.includes("..") || fileName.includes("/")) {
+      if (
+        fileName.includes("..") ||
+        fileName.includes("/") ||
+        fileName.includes("\\")
+      ) {
         return res.status(403).json({ error: "Invalid file path" });
       }
 
-      const mediaUrl = `${process.env.R2_PUBLIC_URL || `https://${process.env.R2_BUCKET_NAME}.${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`}/posts/${postId}/${fileName}`;
+      // Construct media URL safely
+      let baseUrl: string;
+      if (process.env.R2_PUBLIC_URL) {
+        baseUrl = process.env.R2_PUBLIC_URL;
+      } else if (process.env.R2_BUCKET_NAME && process.env.R2_ACCOUNT_ID) {
+        baseUrl = `https://${process.env.R2_BUCKET_NAME}.${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`;
+      } else {
+        return res.status(500).json({ error: "R2 configuration is missing" });
+      }
+
+      const mediaUrl = `${baseUrl}/posts/${postId}/${fileName}`;
 
       res.set({
         "Access-Control-Allow-Origin": "*",
@@ -110,7 +436,7 @@ export function createServer() {
 
       if (response.ok && response.body) {
         const buffer = await response.arrayBuffer();
-        res.send(Buffer.from(buffer));
+        res.send(Buffer.from(new Uint8Array(buffer)));
       } else {
         res
           .status(response.status || 500)
@@ -121,6 +447,46 @@ export function createServer() {
       res.status(500).json({ error: "Failed to fetch media" });
     }
   });
+
+  // Global error handler middleware - MUST be last
+  app.use(
+    (
+      err: any,
+      req: express.Request,
+      res: express.Response,
+      next: express.NextFunction,
+    ) => {
+      console.error("Unhandled error:", err);
+
+      // Prevent sending response twice
+      if (res.headersSent) {
+        console.error("Headers already sent, cannot send error response");
+        return;
+      }
+
+      // Set Content-Type to JSON to ensure proper response format
+      res.set("Content-Type", "application/json");
+
+      const status =
+        err.status ||
+        err.statusCode ||
+        (err.name === "MulterError" ? 400 : 500);
+      const message = err.message || "An unexpected error occurred";
+      const details =
+        process.env.NODE_ENV === "development"
+          ? {
+              message: err.message,
+              stack: err.stack,
+              errorName: err.name,
+            }
+          : undefined;
+
+      res.status(status).json({
+        error: message,
+        ...(details && { details }),
+      });
+    },
+  );
 
   return app;
 }

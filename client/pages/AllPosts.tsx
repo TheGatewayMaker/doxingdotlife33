@@ -10,7 +10,7 @@ import {
   ServerIcon,
   CloseIcon,
 } from "@/components/Icons";
-import { Search, Flame } from "lucide-react";
+import { Flame, Search } from "lucide-react";
 
 const COUNTRIES = [
   "Afghanistan",
@@ -208,7 +208,7 @@ const COUNTRIES = [
   "Zimbabwe",
 ].sort();
 
-export default function Index() {
+export default function AllPosts() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
@@ -312,49 +312,45 @@ export default function Index() {
 
       <main className="flex-1 w-full">
         {/* Hero Section */}
-        <div className="bg-[#000000] py-8 md:py-16 border-b border-[#666666]">
+        <div className="bg-[#000000] pt-8 pb-8 md:pt-16 md:pb-12 border-b border-[#666666]">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div
               className="animate-slideInLeftFade"
               style={{ animationDelay: "0.1s" }}
             >
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 text-white tracking-tighter leading-tight">
-                Doxing Dot Life
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-3 text-white tracking-tighter leading-tight">
+                All Posts
               </h1>
-              <p className="text-base sm:text-lg md:text-xl font-medium text-[#979797] mb-6 max-w-3xl">
-                The largest database of exposed individuals. Search, dox, and
-                expose information on anyone in our comprehensive directory.
+              <p className="text-base sm:text-lg md:text-xl font-semibold text-[#979797] mb-6 max-w-2xl">
+                Browse all the doxed individuals in our database
               </p>
             </div>
 
             {/* Search Bar */}
             <div
-              className="relative mb-8 animate-scaleUpFadeIn"
+              className="relative mb-4 animate-scaleUpFadeIn"
               style={{ animationDelay: "0.2s" }}
             >
               <input
                 type="text"
-                placeholder="Search by name, username, or details..."
+                placeholder="Search Doxed Individuals"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-[#1a1a1a] border border-[#666666] hover:border-[#0088CC] rounded-xl text-white placeholder-[#979797] focus:outline-none focus:ring-2 focus:ring-[#0088CC] focus:border-[#0088CC] text-sm sm:text-base transition-all shadow-lg"
+                className="w-full px-4 sm:px-5 py-3 sm:py-3.5 bg-[#1a1a1a] border-2 border-[#666666] hover:border-[#0088CC] rounded-lg text-white placeholder-[#979797] focus:outline-none focus:ring-2 focus:ring-[#0088CC] focus:border-[#0088CC] text-sm sm:text-base transition-all shadow-md hover:shadow-lg hover:shadow-[#0088CC]/30"
               />
-              <Search className="absolute right-4 sm:right-6 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#979797] pointer-events-none" />
+              <Search className="absolute right-4 sm:right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#979797] pointer-events-none" />
             </div>
 
-            {/* Filters Section */}
+            {/* Categories Section */}
             <div
-              className="animate-slideInUp"
+              className="mb-0 animate-slideInUp"
               style={{ animationDelay: "0.3s" }}
             >
-              <p className="text-xs sm:text-sm font-bold text-[#666666] uppercase tracking-wider mb-4">
-                Refine Your Search
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {/* Country Dropdown */}
                 <div className="relative group">
-                  <label className="text-xs sm:text-sm font-bold text-white block mb-2 flex items-center gap-2">
-                    <GlobeIcon className="w-4 h-4 text-[#979797]" />
+                  <label className="text-sm font-bold text-white block mb-3 flex items-center gap-2">
+                    <GlobeIcon className="w-4 h-4 text-[#0088CC]" />
                     By Country
                   </label>
                   <div className="relative">
@@ -365,7 +361,7 @@ export default function Index() {
                       }
                       value={countrySearch}
                       onChange={(e) => setCountrySearch(e.target.value)}
-                      className="w-full px-4 py-2.5 sm:py-3 pr-10 bg-[#1a1a1a] border border-[#666666] hover:border-[#0088CC] rounded-lg text-white placeholder-[#979797] focus:outline-none focus:ring-2 focus:ring-[#0088CC] focus:border-[#0088CC] text-sm transition-all"
+                      className="w-full px-4 py-3 pr-10 bg-[#1a1a1a] border border-[#666666] hover:border-[#0088CC] rounded-lg text-white placeholder-[#979797] focus:outline-none focus:ring-2 focus:ring-[#0088CC] focus:border-[#0088CC] text-sm transition-all shadow-sm hover:shadow-md hover:shadow-[#0088CC]/20"
                     />
                     {selectedCountry && (
                       <button
@@ -373,15 +369,15 @@ export default function Index() {
                           setSelectedCountry("");
                           setCountrySearch("");
                         }}
-                        className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#979797] hover:text-white transition-colors"
+                        className="absolute top-1/2 right-3 transform -translate-y-1/2 text-accent hover:text-accent/80 transition-colors hover:scale-110"
                         title="Clear selection"
                       >
-                        <CloseIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <CloseIcon className="w-5 h-5" />
                       </button>
                     )}
                   </div>
                   {countrySearch && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-[#1a1a1a] border border-[#666666] rounded-lg z-[999] max-h-48 overflow-y-auto shadow-xl">
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-[#1a1a1a] border border-[#666666] rounded-lg z-[999] max-h-48 overflow-y-auto shadow-lg">
                       {filteredCountries.length > 0 ? (
                         filteredCountries.map((country) => (
                           <button
@@ -390,13 +386,13 @@ export default function Index() {
                               setSelectedCountry(country);
                               setCountrySearch("");
                             }}
-                            className="w-full text-left px-4 py-2.5 hover:bg-[#0088CC]/20 hover:border-[#0088CC] text-white text-sm transition-all duration-200 border-b border-[#666666]/50 last:border-b-0"
+                            className="w-full text-left px-4 py-2 hover:bg-[#0088CC]/30 hover:border-l-2 hover:border-l-[#0088CC] text-white text-sm transition-all duration-200"
                           >
                             {country}
                           </button>
                         ))
                       ) : (
-                        <div className="px-4 py-3 text-[#979797] text-sm text-center">
+                        <div className="px-4 py-2 text-[#666666] text-sm">
                           No countries found
                         </div>
                       )}
@@ -406,8 +402,8 @@ export default function Index() {
 
                 {/* Server Dropdown */}
                 <div className="relative group">
-                  <label className="text-xs sm:text-sm font-bold text-white block mb-2 flex items-center gap-2">
-                    <ServerIcon className="w-4 h-4 text-[#979797]" />
+                  <label className="text-sm font-bold text-white block mb-3 flex items-center gap-2">
+                    <ServerIcon className="w-4 h-4 text-[#0088CC]" />
                     By Server
                   </label>
                   <div className="relative">
@@ -418,7 +414,7 @@ export default function Index() {
                       }
                       value={serverSearch}
                       onChange={(e) => setServerSearch(e.target.value)}
-                      className="w-full px-4 py-2.5 sm:py-3 pr-10 bg-[#1a1a1a] border border-[#666666] hover:border-[#0088CC] rounded-lg text-white placeholder-[#979797] focus:outline-none focus:ring-2 focus:ring-[#0088CC] focus:border-[#0088CC] text-sm transition-all"
+                      className="w-full px-4 py-3 pr-10 bg-[#1a1a1a] border border-[#666666] hover:border-[#0088CC] rounded-lg text-white placeholder-[#979797] focus:outline-none focus:ring-2 focus:ring-[#0088CC] focus:border-[#0088CC] text-sm transition-all shadow-sm hover:shadow-md hover:shadow-[#0088CC]/20"
                     />
                     {selectedServer && (
                       <button
@@ -426,15 +422,15 @@ export default function Index() {
                           setSelectedServer("");
                           setServerSearch("");
                         }}
-                        className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#979797] hover:text-white transition-colors"
+                        className="absolute top-1/2 right-3 transform -translate-y-1/2 text-accent hover:text-accent/80 transition-colors hover:scale-110"
                         title="Clear selection"
                       >
-                        <CloseIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <CloseIcon className="w-5 h-5" />
                       </button>
                     )}
                   </div>
                   {serverSearch && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-[#1a1a1a] border border-[#666666] rounded-lg z-[999] max-h-48 overflow-y-auto shadow-xl">
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-[#1a1a1a] border border-[#666666] rounded-lg z-[999] max-h-48 overflow-y-auto shadow-lg">
                       {filteredServers.length > 0 ? (
                         filteredServers.map((server) => (
                           <button
@@ -443,13 +439,13 @@ export default function Index() {
                               setSelectedServer(server);
                               setServerSearch("");
                             }}
-                            className="w-full text-left px-4 py-2.5 hover:bg-[#0088CC]/20 hover:border-[#0088CC] text-white text-sm transition-all duration-200 border-b border-[#666666]/50 last:border-b-0"
+                            className="w-full text-left px-4 py-2 hover:bg-[#0088CC]/30 hover:border-l-2 hover:border-l-[#0088CC] text-white text-sm transition-all duration-200"
                           >
                             {server}
                           </button>
                         ))
                       ) : (
-                        <div className="px-4 py-3 text-[#979797] text-sm text-center">
+                        <div className="px-4 py-2 text-[#666666] text-sm">
                           No servers found
                         </div>
                       )}
@@ -461,27 +457,27 @@ export default function Index() {
           </div>
         </div>
 
-        {/* Posts Section */}
+        {/* All Posts */}
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
           <div className="mb-10 sm:mb-12 animate-slideInUp">
             {isLoadingPosts ? (
               <>
-                <h2 className="text-4xl sm:text-5xl md:text-6xl font-black mb-3 flex items-center gap-3 text-white">
+                <h2 className="text-5xl md:text-6xl font-black mb-3 flex items-center gap-3 text-white">
                   <span className="inline-block animate-spin">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 border-3 border-[#666666] border-t-[#0088CC] rounded-full"></div>
+                    <div className="w-10 h-10 border-3 border-[#666666] border-t-[#0088CC] rounded-full"></div>
                   </span>
-                  <span>Loading Posts</span>
+                  Loading Posts
                 </h2>
-                <p className="text-[#979797] text-sm sm:text-base">
+                <p className="text-[#979797]">
                   Fetching the latest posts for you...
                 </p>
               </>
             ) : filteredPosts.length === 0 ? (
               <>
-                <h2 className="text-4xl sm:text-5xl md:text-6xl font-black mb-3 text-white">
+                <h2 className="text-5xl md:text-6xl font-black mb-3 text-white">
                   No Posts Found
                 </h2>
-                <p className="text-[#979797] text-sm sm:text-base">
+                <p className="text-[#979797]">
                   {hasSearchFilters
                     ? "Try adjusting your search filters"
                     : "No posts available at the moment"}
@@ -489,15 +485,15 @@ export default function Index() {
               </>
             ) : (
               <>
-                <div className="flex items-center gap-2 sm:gap-3 mb-2">
-                  <Flame className="w-7 h-7 sm:w-8 sm:h-8 text-orange-500" />
-                  <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-white">
-                    Trending
+                <div className="flex items-center gap-3">
+                  <Flame className="w-8 h-8 text-orange-500" />
+                  <h2 className="text-5xl md:text-6xl font-black text-white">
+                    All Posts
                   </h2>
                 </div>
-                <p className="text-[#979797] text-sm sm:text-base">
+                <p className="text-[#979797] mt-3">
                   Showing {displayedPosts.length} of {filteredPosts.length}{" "}
-                  result{filteredPosts.length !== 1 ? "s" : ""}
+                  posts
                 </p>
               </>
             )}
@@ -505,13 +501,13 @@ export default function Index() {
 
           {displayedPosts.length > 0 ? (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 mb-10 sm:mb-12">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6 mb-10 sm:mb-12">
                 {displayedPosts.map((post, idx) => (
                   <div
                     key={post.id}
                     onClick={() => navigate(`/post/${post.id}`)}
                     className={cn(
-                      "group rounded-xl overflow-hidden transition-all duration-300 cursor-pointer hover:-translate-y-2 animate-scaleUpFadeIn border hover:shadow-2xl",
+                      "group rounded-xl overflow-hidden transition-all duration-300 cursor-pointer hover:-translate-y-1 animate-scaleUpFadeIn border hover:shadow-xl",
                       post.isTrend
                         ? "bg-gradient-to-br from-[#4a3a1a] via-[#3a2a1a] to-[#2a1a0a] border-[#9d7e1f] hover:border-[#ffd700] hover:shadow-[#ffd700]/20"
                         : "bg-[#1a1a1a] border-[#666666] hover:border-[#0088CC] hover:shadow-[#0088CC]/20",
@@ -519,11 +515,11 @@ export default function Index() {
                     style={{ animationDelay: `${idx * 0.08}s` }}
                   >
                     {post.thumbnail && (
-                      <div className="w-full h-40 sm:h-48 bg-[#666666] overflow-hidden flex items-center justify-center relative">
+                      <div className="w-full h-40 bg-muted overflow-hidden flex items-center justify-center">
                         <img
                           src={post.thumbnail}
                           alt={post.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          className="w-full h-full object-cover"
                           onError={(e) => {
                             const img = e.target as HTMLImageElement;
                             img.style.display = "none";
@@ -535,9 +531,9 @@ export default function Index() {
                               const errorDiv = document.createElement("div");
                               errorDiv.setAttribute("data-error-shown", "true");
                               errorDiv.className =
-                                "text-center text-[#979797] flex flex-col items-center justify-center gap-2";
+                                "text-center text-muted-foreground flex flex-col items-center justify-center gap-2";
                               errorDiv.innerHTML =
-                                '<div class="text-4xl">🖼️</div><div class="text-xs">Image unavailable</div>';
+                                '<div class="text-3xl">🖼️</div><div class="text-xs">Image unavailable</div>';
                               parent.appendChild(errorDiv);
                             }
                           }}
@@ -546,9 +542,9 @@ export default function Index() {
                         />
                       </div>
                     )}
-                    <div className="p-4 sm:p-5">
+                    <div className="p-5">
                       <div className="flex items-start justify-between gap-2 mb-3">
-                        <h3 className="font-bold text-sm sm:text-base line-clamp-2 flex-1 text-white group-hover:text-[#0088CC] transition-colors">
+                        <h3 className="font-bold text-base line-clamp-2 flex-1 text-white group-hover:text-blue-400 transition-colors">
                           {post.title}
                         </h3>
                         {post.nsfw && (
@@ -557,41 +553,26 @@ export default function Index() {
                           </span>
                         )}
                       </div>
-                      <p className="text-xs sm:text-sm line-clamp-2 mb-4 text-[#979797]">
-                        {post.description}
+                      <p className="text-sm line-clamp-3 mb-4 text-[#979797]">
+                        {post.description.replace(/\*\*/g, "")}
                       </p>
-                      <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                      <div className="flex flex-wrap gap-2">
                         {post.country && (
-                          <span className="inline-flex items-center gap-0.5 px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-[#666666] text-white border border-[#979797]">
+                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-blue-600/20 text-blue-300">
                             <GlobeIcon className="w-3 h-3" />
-                            <span className="hidden sm:inline">
-                              {post.country}
-                            </span>
-                            <span className="sm:hidden">
-                              {post.country.substring(0, 3)}
-                            </span>
+                            {post.country}
                           </span>
                         )}
                         {post.city && (
-                          <span className="inline-flex items-center gap-0.5 px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-[#666666] text-white border border-[#979797]">
+                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-blue-600/20 text-blue-300">
                             <MapPinIcon className="w-3 h-3" />
-                            <span className="hidden sm:inline">
-                              {post.city}
-                            </span>
-                            <span className="sm:hidden">
-                              {post.city.substring(0, 3)}
-                            </span>
+                            {post.city}
                           </span>
                         )}
                         {post.server && (
-                          <span className="inline-flex items-center gap-0.5 px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-[#666666] text-white border border-[#979797]">
+                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-blue-600/20 text-blue-300">
                             <ServerIcon className="w-3 h-3" />
-                            <span className="hidden sm:inline">
-                              {post.server}
-                            </span>
-                            <span className="sm:hidden">
-                              {post.server.substring(0, 3)}
-                            </span>
+                            {post.server}
                           </span>
                         )}
                       </div>
@@ -609,21 +590,21 @@ export default function Index() {
                   <button
                     onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                     disabled={currentPage === 1}
-                    className="px-3 sm:px-4 py-2.5 bg-[#0088CC] text-white font-semibold rounded-lg hover:bg-[#0077BB] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg hover:shadow-[#0088CC]/40 active:scale-95 text-sm sm:text-base"
+                    className="px-3 sm:px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg hover:shadow-blue-500/50 active:scale-95 text-sm sm:text-base"
                   >
                     ← Prev
                   </button>
-                  <div className="flex items-center gap-1 sm:gap-2 flex-wrap justify-center">
+                  <div className="flex items-center gap-1 flex-wrap justify-center">
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map(
                       (page) => (
                         <button
                           key={page}
                           onClick={() => setCurrentPage(page)}
                           className={cn(
-                            "w-8 h-8 sm:w-10 sm:h-10 rounded-lg font-semibold transition-all text-xs sm:text-sm shadow-sm hover:shadow-md",
+                            "w-9 h-9 sm:w-10 sm:h-10 rounded-lg font-medium transition-all text-xs sm:text-sm shadow-sm hover:shadow-md",
                             currentPage === page
-                              ? "bg-[#0088CC] text-white"
-                              : "bg-[#1a1a1a] border border-[#666666] hover:border-[#0088CC] hover:bg-[#0088CC]/10 text-[#979797]",
+                              ? "bg-blue-600 text-white"
+                              : "bg-slate-800 border border-slate-700 hover:border-slate-600 text-white",
                           )}
                         >
                           {page}
@@ -636,7 +617,7 @@ export default function Index() {
                       setCurrentPage(Math.min(totalPages, currentPage + 1))
                     }
                     disabled={currentPage === totalPages}
-                    className="px-3 sm:px-4 py-2.5 bg-[#0088CC] text-white font-semibold rounded-lg hover:bg-[#0077BB] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg hover:shadow-[#0088CC]/40 active:scale-95 text-sm sm:text-base"
+                    className="px-3 sm:px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg hover:shadow-blue-500/50 active:scale-95 text-sm sm:text-base"
                   >
                     Next →
                   </button>
@@ -645,18 +626,17 @@ export default function Index() {
             </>
           ) : (
             <div
-              className="text-center py-16 sm:py-20 animate-popIn"
+              className="text-center py-16 animate-popIn"
               style={{ animationDelay: "0.2s" }}
             >
               <div
                 className="text-5xl sm:text-6xl mb-4 animate-slideInDown"
                 style={{ animationDelay: "0.3s" }}
               >
-                🔍
+                📋
               </div>
-              <p className="text-[#979797] text-sm sm:text-base max-w-lg mx-auto">
-                No posts match your current search filters. Try adjusting your
-                search terms or filters.
+              <p className="text-gray-400 text-base sm:text-lg">
+                No posts match your search criteria. Try adjusting your filters.
               </p>
             </div>
           )}

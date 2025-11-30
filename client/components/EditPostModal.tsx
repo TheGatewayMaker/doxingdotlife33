@@ -7,6 +7,7 @@ interface EditPostModalProps {
   post: Post;
   onClose: () => void;
   onUpdate: (post: Post) => void;
+  getIdToken: () => Promise<string | null>;
 }
 
 const COUNTRIES = [
@@ -99,12 +100,16 @@ export default function EditPostModal({
   post,
   onClose,
   onUpdate,
+  getIdToken,
 }: EditPostModalProps) {
   const [title, setTitle] = useState(post.title);
   const [description, setDescription] = useState(post.description);
   const [country, setCountry] = useState(post.country || "");
   const [city, setCity] = useState(post.city || "");
   const [server, setServer] = useState(post.server || "");
+  const [nsfw, setNsfw] = useState(post.nsfw || false);
+  const [isTrend, setIsTrend] = useState(post.isTrend || false);
+  const [trendRank, setTrendRank] = useState(String(post.trendRank || ""));
   const [isSaving, setIsSaving] = useState(false);
   const [countrySearch, setCountrySearch] = useState("");
 
@@ -120,10 +125,16 @@ export default function EditPostModal({
 
     try {
       setIsSaving(true);
+      const idToken = await getIdToken();
+      if (!idToken) {
+        throw new Error("Authentication token not available");
+      }
+
       const response = await fetch(`/api/posts/${post.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
         },
         body: JSON.stringify({
           title: title.trim(),
@@ -131,6 +142,13 @@ export default function EditPostModal({
           country: country.trim(),
           city: city.trim(),
           server: server.trim(),
+          nsfw,
+          isTrend,
+          trendRank: isTrend
+            ? trendRank
+              ? parseInt(trendRank, 10)
+              : null
+            : null,
         }),
       });
 
@@ -139,14 +157,7 @@ export default function EditPostModal({
       }
 
       const result = await response.json();
-      onUpdate({
-        ...post,
-        title: result.post.title,
-        description: result.post.description,
-        country: result.post.country,
-        city: result.post.city,
-        server: result.post.server,
-      });
+      onUpdate(result.post);
       toast.success("Post updated successfully");
       onClose();
     } catch (error) {
@@ -248,6 +259,89 @@ export default function EditPostModal({
               </p>
             )}
           </div>
+
+          {/* NSFW Toggle */}
+          <div>
+            <div className="flex items-center gap-3 bg-red-900/20 border border-red-600/50 rounded-lg p-4">
+              <input
+                type="checkbox"
+                id="nsfw-toggle"
+                checked={nsfw}
+                onChange={(e) => setNsfw(e.target.checked)}
+                disabled={isSaving}
+                className="w-5 h-5 accent-red-600 rounded cursor-pointer disabled:opacity-50"
+              />
+              <label htmlFor="nsfw-toggle" className="flex-1 cursor-pointer">
+                <div className="flex items-center gap-2 mb-1">
+                  <svg
+                    className="w-4 h-4 text-red-400"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                  </svg>
+                  <p className="text-sm font-bold text-red-400">Mark as NSFW</p>
+                </div>
+                <p className="text-xs text-red-300">
+                  This content is Not Safe For Work and requires age
+                  verification
+                </p>
+              </label>
+            </div>
+          </div>
+
+          {/* Trend Toggle */}
+          <div>
+            <div className="flex items-center gap-3 bg-amber-900/20 border border-amber-600/50 rounded-lg p-4">
+              <input
+                type="checkbox"
+                id="trend-toggle"
+                checked={isTrend}
+                onChange={(e) => setIsTrend(e.target.checked)}
+                disabled={isSaving}
+                className="w-5 h-5 accent-amber-600 rounded cursor-pointer disabled:opacity-50"
+              />
+              <label htmlFor="trend-toggle" className="flex-1 cursor-pointer">
+                <div className="flex items-center gap-2 mb-1">
+                  <svg
+                    className="w-4 h-4 text-amber-400"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                  </svg>
+                  <p className="text-sm font-bold text-amber-400">
+                    Mark as Trending
+                  </p>
+                </div>
+                <p className="text-xs text-amber-300">
+                  Posts marked as trending will appear first with a golden
+                  gradient background
+                </p>
+              </label>
+            </div>
+          </div>
+
+          {/* Trend Rank */}
+          {isTrend && (
+            <div>
+              <label className="text-sm font-semibold text-foreground block mb-2">
+                Trend Rank Number
+              </label>
+              <input
+                type="number"
+                value={trendRank}
+                onChange={(e) => setTrendRank(e.target.value)}
+                disabled={isSaving}
+                className="w-full px-4 py-2 bg-muted border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all disabled:opacity-50"
+                placeholder="Enter rank number (1 = first, 2 = second, etc.)"
+                min="1"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Lower numbers appear first in the trending section
+              </p>
+            </div>
+          )}
 
           {/* City */}
           <div>

@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 
 .config/
-!.env
+# .env is tracked (repo will be made private - credentials committed intentionally)
