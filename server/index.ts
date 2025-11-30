@@ -59,6 +59,39 @@ export function createServer() {
       const isJsonRequest =
         req.headers["content-type"]?.includes("application/json");
 
+      // Handle Buffer-like objects (from Netlify or other serverless platforms)
+      if (req.body && typeof req.body === "object" && isJsonRequest) {
+        // Check if body is a Buffer-like structure with numeric keys or type: 'Buffer'
+        const isBufferLike =
+          (req.body as any).type === "Buffer" ||
+          Buffer.isBuffer(req.body) ||
+          (typeof req.body === "object" &&
+            Object.keys(req.body).every((key) => !isNaN(Number(key))));
+
+        if (isBufferLike) {
+          try {
+            console.log(
+              `[${new Date().toISOString()}] 🔄 Detected Buffer-like body, attempting to decode...`,
+            );
+            // Convert Buffer-like to actual Buffer then to string
+            const buffer = Buffer.isBuffer(req.body)
+              ? req.body
+              : Buffer.from(req.body);
+            const jsonString = buffer.toString("utf-8");
+            req.body = JSON.parse(jsonString);
+            console.log(
+              `[${new Date().toISOString()}] ✅ Successfully decoded Buffer-like body`,
+            );
+          } catch (e) {
+            console.error(
+              `[${new Date().toISOString()}] ❌ Failed to decode Buffer-like body:`,
+              e instanceof Error ? e.message : String(e),
+            );
+            // Continue to next middleware
+          }
+        }
+      }
+
       // If body is a string (happens in some serverless scenarios), parse it
       if (req.body && typeof req.body === "string" && isJsonRequest) {
         try {

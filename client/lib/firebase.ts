@@ -1,49 +1,15 @@
-import { initializeApp } from "firebase/app";
-import {
-  getAuth,
-  GoogleAuthProvider,
-  signInWithPopup,
-  signOut,
-  Auth,
-  User,
-} from "firebase/auth";
+// Local authentication stub (Firebase removed)
+// This provides a fallback when Firebase is not configured
 
-// Firebase config from environment variables (Vite client-side)
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-};
-
-// Check if Firebase config is valid
-const isFirebaseConfigValid = Object.values(firebaseConfig).every(
-  (val) => val && val !== undefined && val !== "",
-);
-
-let auth: Auth | null = null;
-let googleProvider: GoogleAuthProvider | null = null;
-
-if (isFirebaseConfigValid) {
-  try {
-    const app = initializeApp(firebaseConfig);
-    auth = getAuth(app);
-
-    googleProvider = new GoogleAuthProvider();
-    googleProvider.addScope("profile");
-    googleProvider.addScope("email");
-  } catch (error) {
-    console.error("Firebase initialization error:", error);
-    auth = null;
-    googleProvider = null;
-  }
-} else {
-  console.warn(
-    "Firebase configuration is incomplete. Some features will be disabled. Please set all VITE_FIREBASE_* environment variables.",
-  );
+export interface User {
+  uid: string;
+  email: string | null;
+  displayName: string | null;
 }
+
+// Mock auth state
+let currentUser: User | null = null;
+const authStateCallbacks: Array<(user: User | null) => void> = [];
 
 // Authorized email domains/accounts
 const AUTHORIZED_EMAILS = import.meta.env.VITE_AUTHORIZED_EMAILS
@@ -51,58 +17,6 @@ const AUTHORIZED_EMAILS = import.meta.env.VITE_AUTHORIZED_EMAILS
       email.trim().toLowerCase(),
     )
   : [];
-
-/**
- * Sign in with Google
- * Returns user data if successful, throws error if email is not authorized
- */
-export const signInWithGoogle = async (): Promise<User> => {
-  if (!auth || !googleProvider) {
-    throw new Error(
-      "Firebase authentication is not configured. Please set up Firebase environment variables.",
-    );
-  }
-
-  try {
-    const result = await signInWithPopup(auth, googleProvider);
-    const user = result.user;
-
-    // Validate that user email is authorized
-    if (user.email) {
-      const isAuthorized = isEmailAuthorized(user.email);
-      if (!isAuthorized) {
-        await signOut(auth);
-        throw new Error(
-          "Your email is not authorized to access the admin panel. Please contact the administrator.",
-        );
-      }
-    } else {
-      await signOut(auth);
-      throw new Error("Unable to retrieve email from Google account.");
-    }
-
-    return user;
-  } catch (error) {
-    console.error("Google sign-in error:", error);
-    throw error;
-  }
-};
-
-/**
- * Sign out the current user
- */
-export const signOutUser = async (): Promise<void> => {
-  if (!auth) {
-    throw new Error("Firebase authentication is not configured.");
-  }
-
-  try {
-    await signOut(auth);
-  } catch (error) {
-    console.error("Sign out error:", error);
-    throw error;
-  }
-};
 
 /**
  * Check if an email is authorized
@@ -125,25 +39,81 @@ export const isEmailAuthorized = (email: string): boolean => {
 };
 
 /**
- * Get Firebase ID token for backend verification
+ * Sign in with Google
+ * Returns user data if successful
  */
-export const getIdToken = async (): Promise<string | null> => {
-  if (!auth) {
-    console.warn("Firebase authentication is not configured.");
-    return null;
+export const signInWithGoogle = async (): Promise<User> => {
+  // Fallback: prompt user for email in demo mode
+  const email = prompt("Enter your email:");
+  if (!email) {
+    throw new Error("Sign in cancelled");
   }
 
-  try {
-    const user = auth.currentUser;
-    if (!user) return null;
-    return await user.getIdToken();
-  } catch (error) {
-    console.error("Error getting ID token:", error);
-    return null;
+  if (!isEmailAuthorized(email)) {
+    throw new Error(
+      "Your email is not authorized to access the admin panel. Please contact the administrator.",
+    );
   }
+
+  const user: User = {
+    uid: Math.random().toString(36).slice(2),
+    email: email,
+    displayName: email.split("@")[0],
+  };
+
+  currentUser = user;
+  notifyAuthStateChanged(user);
+  return user;
 };
 
 /**
- * Export auth instance (may be null if Firebase is not configured)
+ * Sign out the current user
  */
-export { auth };
+export const signOutUser = async (): Promise<void> => {
+  currentUser = null;
+  notifyAuthStateChanged(null);
+};
+
+/**
+ * Get Firebase ID token for backend verification
+ */
+export const getIdToken = async (): Promise<string | null> => {
+  if (!currentUser) return null;
+  // Return a mock token
+  return btoa(JSON.stringify(currentUser));
+};
+
+/**
+ * Listen to auth state changes
+ */
+export const onAuthStateChanged = (
+  callback: (user: User | null) => void,
+): (() => void) => {
+  callback(currentUser);
+  authStateCallbacks.push(callback);
+  return () => {
+    const index = authStateCallbacks.indexOf(callback);
+    if (index > -1) {
+      authStateCallbacks.splice(index, 1);
+    }
+  };
+};
+
+/**
+ * Notify all subscribers of auth state change
+ */
+const notifyAuthStateChanged = (user: User | null) => {
+  authStateCallbacks.forEach((cb) => cb(user));
+};
+
+/**
+ * Get current auth instance (null for mock auth)
+ */
+export const auth = null;
+
+/**
+ * Get current user
+ */
+export const getCurrentUser = (): User | null => {
+  return currentUser;
+};

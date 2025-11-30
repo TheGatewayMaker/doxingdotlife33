@@ -25,19 +25,28 @@ export const generatePresignedUrls = async (
   files: FileMetadata[],
   idToken: string,
 ): Promise<GenerateUrlsResponse> => {
+  // Ensure files are plain metadata objects (no File/Blob objects)
+  const filesPayload = files.map((f) => ({
+    filename: f.filename,
+    contentType: f.contentType,
+    fileSize: f.fileSize,
+  }));
+
   const requestBody = {
-    files,
+    files: filesPayload,
   };
 
   console.log("[FRONTEND] Generating presigned URLs with files:", {
-    filesCount: files.length,
-    files: files.map((f) => ({
-      filename: f.filename,
-      contentType: f.contentType,
-      fileSize: f.fileSize,
-    })),
-    requestBody: requestBody,
-    requestBodyJSON: JSON.stringify(requestBody),
+    filesCount: filesPayload.length,
+    files: filesPayload,
+  });
+
+  // Stringify the request body exactly once
+  const bodyString = JSON.stringify(requestBody);
+
+  console.log("[FRONTEND] Request body being sent:", {
+    bodyLength: bodyString.length,
+    bodyPreview: bodyString.substring(0, 200),
   });
 
   const response = await fetch("/api/generate-upload-urls", {
@@ -46,7 +55,7 @@ export const generatePresignedUrls = async (
       "Content-Type": "application/json",
       Authorization: `Bearer ${idToken}`,
     },
-    body: JSON.stringify(requestBody),
+    body: bodyString,
   });
 
   console.log("[FRONTEND] Response status:", response.status);

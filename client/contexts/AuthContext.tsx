@@ -5,9 +5,9 @@ import {
   useCallback,
   useEffect,
 } from "react";
-import { User, onAuthStateChanged } from "firebase/auth";
 import {
-  auth,
+  User,
+  onAuthStateChanged,
   signInWithGoogle,
   signOutUser,
   getIdToken,
@@ -32,17 +32,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Listen for Firebase auth state changes
+  // Listen for auth state changes
   useEffect(() => {
-    if (!auth) {
-      console.warn(
-        "Firebase auth is not initialized. Authentication features will be unavailable.",
-      );
-      setIsLoading(false);
-      return;
-    }
-
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged((currentUser) => {
       setUser(currentUser);
       setIsLoading(false);
     });

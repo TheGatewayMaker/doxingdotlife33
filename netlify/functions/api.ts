@@ -61,16 +61,61 @@ const getServerlessHandler = () => {
         console.log(
           `[${new Date().toISOString()}] ${event.httpMethod} ${event.path} - Content-Type: ${event.headers["content-type"] || "unknown"}`,
         );
-        if (event.body) {
+
+        // Explicitly handle body encoding/decoding for JSON requests
+        if (
+          event.body &&
+          event.headers["content-type"]?.includes("application/json")
+        ) {
+          let bodyToDecode = event.body;
+
+          // If body is base64 encoded, decode it first
+          if (event.isBase64Encoded && typeof event.body === "string") {
+            try {
+              console.log(
+                `[${new Date().toISOString()}] 🔄 Decoding base64-encoded body...`,
+              );
+              bodyToDecode = Buffer.from(event.body, "base64").toString(
+                "utf-8",
+              );
+              event.isBase64Encoded = false;
+              console.log(
+                `[${new Date().toISOString()}] ✅ Successfully decoded base64 body`,
+              );
+            } catch (e) {
+              console.error(
+                `[${new Date().toISOString()}] ❌ Failed to decode base64 body:`,
+                e,
+              );
+            }
+          }
+
+          // Ensure body is a proper string for Express to parse
+          if (typeof bodyToDecode !== "string") {
+            try {
+              console.log(
+                `[${new Date().toISOString()}] 🔄 Converting body to JSON string...`,
+              );
+              bodyToDecode = JSON.stringify(bodyToDecode);
+              console.log(
+                `[${new Date().toISOString()}] ✅ Successfully converted body to JSON string`,
+              );
+            } catch (e) {
+              console.error(
+                `[${new Date().toISOString()}] ❌ Failed to stringify body:`,
+                e,
+              );
+            }
+          }
+
+          event.body = bodyToDecode;
+
           const bodyPreview =
             typeof event.body === "string"
               ? event.body.substring(0, 200)
               : JSON.stringify(event.body).substring(0, 200);
           console.log(
             `[${new Date().toISOString()}] Event body (first 200 chars): ${bodyPreview}`,
-          );
-          console.log(
-            `[${new Date().toISOString()}] Is base64 encoded: ${event.isBase64Encoded}`,
           );
         }
       },
