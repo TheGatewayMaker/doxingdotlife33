@@ -217,12 +217,12 @@ export default function UppostPanel() {
 
       const filesForPresignedUrls = [
         {
-          fileName: `thumbnail-${Date.now()}`,
+          filename: `thumbnail-${Date.now()}`,
           contentType: thumbnail.type || "image/jpeg",
           fileSize: thumbnail.size,
         },
         ...mediaFiles.map((file) => ({
-          fileName: file.name,
+          filename: file.name,
           contentType: file.type || "application/octet-stream",
           fileSize: file.size,
         })),

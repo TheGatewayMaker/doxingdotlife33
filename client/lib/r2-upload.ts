@@ -1,5 +1,5 @@
 interface FileMetadata {
-  fileName: string;
+  filename: string;
   contentType: string;
   fileSize: number;
 }
@@ -32,7 +32,7 @@ export const generatePresignedUrls = async (
   console.log("[FRONTEND] Generating presigned URLs with files:", {
     filesCount: files.length,
     files: files.map((f) => ({
-      fileName: f.fileName,
+      filename: f.filename,
       contentType: f.contentType,
       fileSize: f.fileSize,
     })),

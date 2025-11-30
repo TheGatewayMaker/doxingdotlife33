@@ -112,7 +112,8 @@ export const handleGenerateUploadUrls: RequestHandler = async (
       });
     }
 
-    // Validate each file in the request
+    // Normalize and validate each file in the request
+    const normalizedFiles = [];
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
 
@@ -128,12 +129,20 @@ export const handleGenerateUploadUrls: RequestHandler = async (
         });
       }
 
-      const { fileName, contentType, fileSize } = file as any;
+      // Normalize field names: accept fileName, filename, or name
+      let fileName =
+        (file as any).filename || (file as any).fileName || (file as any).name;
+      const contentType = (file as any).contentType;
+      const fileSize = (file as any).fileSize;
+
+      console.log(
+        `[${new Date().toISOString()}] File ${i} normalized: fileName=${fileName}, contentType=${contentType}, fileSize=${fileSize}`,
+      );
 
       if (!fileName || typeof fileName !== "string" || fileName.trim() === "") {
         return res.status(400).json({
           error: "Invalid file metadata",
-          details: `File ${i}: fileName must be a non-empty string. Received: ${JSON.stringify(fileName)}`,
+          details: `File ${i}: filename (or fileName/name) must be a non-empty string. Received: ${JSON.stringify(fileName)}`,
         });
       }
 
@@ -166,15 +175,29 @@ export const handleGenerateUploadUrls: RequestHandler = async (
           details: `File ${fileName} (${(fileSize / 1024 / 1024).toFixed(2)}MB) exceeds 500MB limit`,
         });
       }
+
+      normalizedFiles.push({
+        fileName,
+        contentType,
+        fileSize,
+      });
     }
+
+    const normalizedFilesCount = normalizedFiles.length;
+    console.log(
+      `[${new Date().toISOString()}] 📊 DEBUG - normalizedFilesCount: ${normalizedFilesCount}`,
+    );
 
     const postId = Date.now().toString();
 
     console.log(
-      `[${new Date().toISOString()}] Generating presigned URLs for ${files.length} file(s)`,
+      `[${new Date().toISOString()}] Generating presigned URLs for ${normalizedFilesCount} file(s)`,
     );
 
-    const presignedUrls = await generatePresignedUploadUrls(postId, files);
+    const presignedUrls = await generatePresignedUploadUrls(
+      postId,
+      normalizedFiles,
+    );
 
     const response: GenerateUrlsResponse = {
       postId,
