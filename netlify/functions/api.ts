@@ -68,6 +68,17 @@ const getServerlessHandler = () => {
         console.log(
           `[${new Date().toISOString()}] ${event.httpMethod} ${event.path} - Content-Type: ${event.headers["content-type"] || "unknown"}`,
         );
+        if (event.body) {
+          const bodyPreview = typeof event.body === "string" ?
+            event.body.substring(0, 200) :
+            JSON.stringify(event.body).substring(0, 200);
+          console.log(
+            `[${new Date().toISOString()}] Event body (first 200 chars): ${bodyPreview}`,
+          );
+          console.log(
+            `[${new Date().toISOString()}] Is base64 encoded: ${event.isBase64Encoded}`,
+          );
+        }
       },
       response: (response: any) => {
         // Ensure Content-Type is always set for responses
