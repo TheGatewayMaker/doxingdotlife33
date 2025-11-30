@@ -64,7 +64,7 @@ export function createServer() {
         // Check if body is a Buffer-like structure with numeric keys or type: 'Buffer'
         const isBufferLike =
           (req.body as any).type === "Buffer" ||
-          (Buffer.isBuffer(req.body)) ||
+          Buffer.isBuffer(req.body) ||
           (typeof req.body === "object" &&
             Object.keys(req.body).every((key) => !isNaN(Number(key))));
 

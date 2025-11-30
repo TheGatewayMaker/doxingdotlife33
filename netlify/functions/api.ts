@@ -75,7 +75,9 @@ const getServerlessHandler = () => {
               console.log(
                 `[${new Date().toISOString()}] 🔄 Decoding base64-encoded body...`,
               );
-              bodyToDecode = Buffer.from(event.body, "base64").toString("utf-8");
+              bodyToDecode = Buffer.from(event.body, "base64").toString(
+                "utf-8",
+              );
               event.isBase64Encoded = false;
               console.log(
                 `[${new Date().toISOString()}] ✅ Successfully decoded base64 body`,
